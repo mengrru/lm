@@ -1,8 +1,11 @@
-type PathHash = string
+export type PathHash = string
 type Path = string
 type PicPosition = [number, number] // percentage
 type PicSize = [number, number] // percentage
 type ArrayIndex = number
+
+export const MINI_DIR = 'mini'
+export const PICS_DIR = 'pics'
 
 /**
  * pics-metadata.json
@@ -10,9 +13,15 @@ type ArrayIndex = number
 export type PicMetadata = {
     id: PathHash
     path: string
-    miniPath: string
+    miniPath?: string
 }
-export type PicsMetadata = PicMetadata[]
+export type PicsMetadata = {
+    [id: string]: PicMetadata
+}
+export type Metadata = {
+    hash: string,
+    data: PicsMetadata
+}
 
 /**
  * config.json
@@ -32,7 +41,6 @@ export type Config = {
             previewWidth: number
             previewHeight: number
         }
-        inherentPic: PathHash
         cover: Path
         title: string
     }
@@ -42,6 +50,7 @@ export type Config = {
             icon: Path
             defaultPic: PathHash
             allowBlank: boolean
+            hide: boolean
         }
         items: {
             title: string

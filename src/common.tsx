@@ -1,17 +1,53 @@
 import React, { RefObject } from 'react'
+import { saveAs } from 'file-saver'
+
+/**
+ * SaveTextLink
+ * input: filename, file content
+ */
+type SaveTextLinkProps = {
+  filename: string
+  fileContent: string
+  class: string
+}
+type SaveTextLinkState = {
+}
+
+export class SaveTextLink extends React.Component<SaveTextLinkProps, SaveTextLinkState> {
+  constructor (props: SaveTextLinkProps) {
+    super(props)
+  }
+  createBlob (): Blob {
+    return new Blob([this.props.fileContent], { type: "text/plain;charset=utf-8" })
+  }
+  save () {
+    saveAs(this.createBlob(), this.props.filename)
+  }
+  render () {
+    return (
+      <a
+        href="#"
+        onClick={() => this.save()}
+        className={this.props.class}
+      >
+        {this.props.children}
+      </a>
+    )
+  }
+}
 
 /** ShowImage
  * input: image file blob : File
  * show: image
  */
-type ShowImageState = {
+type ShowLocalImageState = {
     imageBase64String: string
 }
-type ShowImageProps = {
+type ShowLocalImageProps = {
     imageFile: File | null
 }
-export class ShowImage extends React.Component<ShowImageProps, ShowImageState> {
-  constructor (props: ShowImageProps) {
+export class ShowLocalImage extends React.Component<ShowLocalImageProps, ShowLocalImageState> {
+  constructor (props: ShowLocalImageProps) {
     super(props)
     this.state = {
         imageBase64String: ''
@@ -94,3 +130,4 @@ export class DirUploadInput extends React.Component<DirUploadInputProps, DirUplo
     )
   }
 }
+
