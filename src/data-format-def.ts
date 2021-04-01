@@ -1,8 +1,10 @@
 export type PathHash = string
-type Path = string
-type PicPosition = [number, number] // percentage
-type PicSize = [number, number] // percentage
-type ArrayIndex = number
+export type FullPath = string // sourceName/*
+export type PicPath = string // PIC_DIR/CategoryName/picName
+export type PicMiniPath = string // PIC_DIR/CategoryName/MINI_DIR/picName
+export type PicPosition = [number, number] // percentage
+export type PicSize = [number, number] // percentage
+export type ArrayIndex = number
 
 export const MINI_DIR = 'mini'
 export const PICS_DIR = 'pics'
@@ -12,8 +14,9 @@ export const PICS_DIR = 'pics'
  */
 export type PicMetadata = {
     id: PathHash
-    path: string
-    miniPath?: string
+    path: PicPath
+    miniPath?: PicMiniPath
+    filename: string
 }
 export type PicsMetadata = {
     [id: string]: PicMetadata
@@ -27,6 +30,7 @@ export type Metadata = {
  * config.json
  */
 export type Config = {
+    sourcesAbsolutePath: string
     info: {
         author: {
             name: string
@@ -34,23 +38,24 @@ export type Config = {
             website: string
         }
         interface: {
-            headImg: Path
-            footerImg: Path
-            backgroundImg: Path
+            headImg: FullPath
+            footerImg: FullPath
+            backgroundImg: FullPath
             footerText: string
             previewWidth: number
             previewHeight: number
         }
-        cover: Path
+        cover: FullPath
         title: string
     }
-    sources: {
+    category: {
         info: {
             title: string
-            icon: Path
+            icon: FullPath
             defaultPic: PathHash
             allowBlank: boolean
             hide: boolean
+            index: number
         }
         items: {
             title: string
@@ -63,6 +68,56 @@ export type Config = {
 }
 
 /**
+ * form data
+ */
+export type ConfigFromForm = {
+    info: {
+        author: {
+            name: string
+            email: string
+            website: string
+        }
+        interface: {
+            footerText: string
+        }
+        title: string
+    }
+    category: CategoryInfoFromForm
+    
+}
+
+export type CategoryInfoFromForm = {
+    [title: string]: {
+        title: string
+        allowBlank: boolean
+        hide: boolean
+        index: number
+    }
+}
+
+/**
+ * category raw data, generate from pics metadata
+ */
+export type CategoryRawData = {
+    [title: string]: {
+        info: {
+            title: string
+            icon: PicPath // from sourceName, but not implement
+            defalutPic: PathHash
+        }
+        items: {
+            [title: string]: {
+                title: string
+                pics: {
+                    picId: PathHash
+                    defaultPosition: PicPosition
+                }[]
+            }
+        }
+    }
+}
+
+/**
  * user output data
  */
 export type UserOutputData = {
@@ -72,5 +127,6 @@ export type UserOutputData = {
         picId: PathHash
         position: PicPosition
         size: PicSize
+        index: number
     }[]
 }[]
