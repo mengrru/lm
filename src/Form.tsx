@@ -37,11 +37,11 @@ class Form extends React.Component<FormProps, FormState> {
             title: '',
         }
         this.categoryData = {}
-        this.onSubmitForm = this.onSubmitForm.bind(this)
+        this.getFullData = this.getFullData.bind(this)
         this.getCategoryInfo = this.getCategoryInfo.bind(this)
         this.onInputChange = this.onInputChange.bind(this)
     }
-    onSubmitForm () {
+    getFullData (): ConfigFromForm {
         const data: ConfigFromForm = {
             info: {
                 author: Object.assign({}, this.state.author),
@@ -50,7 +50,7 @@ class Form extends React.Component<FormProps, FormState> {
             },
             category: this.categoryData
         }
-        console.log(data)
+        return data
     }
     getCategoryInfo (categoryInfo: CategoryInfoFromForm) {
         this.categoryData = categoryInfo
@@ -123,7 +123,11 @@ class Form extends React.Component<FormProps, FormState> {
                         picsMetadata={this.props.picsMetadata}
                     />
                 }
-                <input type="button" value="提交" onClick={this.onSubmitForm}/>
+                <input
+                    type="button"
+                    value="确定"
+                    onClick={() => this.props.handleOutput(this.getFullData())}
+                />
             </form>
         )
     }

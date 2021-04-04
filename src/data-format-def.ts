@@ -30,7 +30,7 @@ export type Metadata = {
  * config.json
  */
 export type Config = {
-    sourcesAbsolutePath: string
+    root: string
     info: {
         author: {
             name: string

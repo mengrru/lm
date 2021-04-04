@@ -1,4 +1,4 @@
-import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData } from './data-format-def'
+import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath } from './data-format-def'
 import { Md5 } from 'ts-md5/dist/md5'
 
 function hash (s: string): string {
@@ -118,4 +118,59 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
         })
     }
     return res
+}
+
+export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileList): Config {
+    // thought fileList is not empty
+    const fileArr = Array.from(sourceFileList)
+    const picsMetadata: PicsMetadata = genMetadata(sourceFileList).data
+    const categoryRawData: CategoryRawData = getCategoryRawData(picsMetadata)
+    const getFullPath = function (name: string): FullPath {
+        for (const file of fileArr) {
+            // @ts-ignore
+            const relaPathArr = file.webkitRelativePath.split('/')
+            if (relaPathArr[1].split('.')[0] == name) {
+                return relaPathArr.join('/')
+            }
+        }
+        return ''
+    }
+    return {
+        // @ts-ignore
+        root: fileArr[0].webkitRelativePath.split('/')[0] + '/',
+        info: {
+            author: configFromForm.info.author,
+            interface: {
+                headImg: getFullPath('headImg'),
+                footerImg: getFullPath('footerImg'),
+                backgroundImg: getFullPath('backgroundImg'),
+                footerText: configFromForm.info.interface.footerText,
+                previewHeight: 100,
+                previewWidth: 100
+            },
+            cover: getFullPath('cover'),
+            title: configFromForm.info.title
+        },
+        category: (function (categoryInfoFromForm, categoryRawData){
+            const res: Config['category'] = []
+            Object.keys(categoryRawData).forEach((title) => {
+                const raw = categoryRawData[title]
+                const fromForm = categoryInfoFromForm[title]
+                res.push({
+                    info: {
+                        title: title,
+                        icon: raw.info.icon,
+                        defaultPic: raw.info.defalutPic,
+                        allowBlank: fromForm.allowBlank,
+                        hide: fromForm.hide,
+                        index: fromForm.index
+                    },
+                    items: Object.keys(raw.items).map(itemTitle => {
+                        return raw.items[itemTitle]
+                    })
+                })
+            })
+            return res
+        })(configFromForm.category, categoryRawData)
+    }
 }
