@@ -8,9 +8,11 @@ export type ArrayIndex = number
 
 export const MINI_DIR = 'mini'
 export const PICS_DIR = 'pics'
+export const CONFIG_FILENAME = 'config.json'
+export const METADATA_FILENAME = 'metadata.json'
 
 /**
- * pics-metadata.json
+ * metadata.json
  */
 export type PicMetadata = {
     id: PathHash

@@ -1,16 +1,37 @@
 import React from 'react';
 import './Test.css';
-import { DirUploadInput, ShowLocalImage, SaveTextLink } from './common'
+import { DirUploadInput, ShowLocalImage, SaveTextLink, ImageOnCanvas } from './common'
 import { ConfigFromForm } from './data-format-def';
 import Form from './Form';
-import { genConfig, genHashFromSourceFileList, genMetadata } from './utils'
+import { genConfig, genHashFromSourceFileList, genMetadata, getImageValidRegion } from './utils'
 
 class Test extends React.Component<any, any>{
   constructor (props: any) {
     super(props)
     this.state = {
       testFileList: null,
-      formOutput: null
+      formOutput: null,
+      testImageJSX: (
+        <div></div>
+      )
+    }
+    const testImage = new Image()
+    testImage.src = '/sources/linmo/pics/衣服/蓝色卫衣.png'
+    testImage.onload = (e) => {
+      if (!e.target) {
+        return
+      }
+      this.setState({
+        testImageJSX: (
+          <div style={{'backgroundColor': '#fff'}}>
+            <ImageOnCanvas
+              imageObj={testImage}
+              canvasSize={[90, 90]}
+              border={5}
+            ></ImageOnCanvas>
+          </div>
+        )
+      })
     }
   }
   getFileList (fileList: FileList) {
@@ -45,22 +66,23 @@ class Test extends React.Component<any, any>{
     return (
       <div className="App">
         <header className="App-header">
+          {this.state.testImageJSX}
           <Form
             handleOutput={(output) => this.getFormOutput(output)}
             picsMetadata={metadata ? metadata.data : undefined}
           />
           {/* 图片路径写法 */}
-          <img src="/sources/linmo/轮廓.png" className="App-logo" alt="logo" />
+          <img src="/sources/linmo/墨镜.png" className="App-logo" alt="logo" />
           <p>
             Edit <code>src/App.tsx</code> and save to reload.
           </p>
           {testHash}
           <SaveTextLink
-            fileContent={this.genConfig()}
-            filename="download_test.json"
+            fileContent={metadataJSON}
+            filename="download_metadata_test.json"
             class=""
           >
-            测试下载链接
+           metadata.json下载测试 
           </SaveTextLink>
           <SaveTextLink
             fileContent={this.genConfig()}

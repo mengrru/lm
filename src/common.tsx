@@ -1,5 +1,6 @@
 import React, { RefObject } from 'react'
 import { saveAs } from 'file-saver'
+import { getImageValidRegion } from './utils'
 
 /**
  * SaveTextLink
@@ -131,3 +132,69 @@ export class DirUploadInput extends React.Component<DirUploadInputProps, DirUplo
   }
 }
 
+/**
+ * ImageOnCanvas
+ * show a image on canvas
+ */
+type ImageOnCanvasProps = {
+  imageObj: HTMLImageElement,
+  canvasSize: [number, number],
+  border: number
+}
+type ImageOnCanvasState = {
+}
+export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCanvasState> {
+  canvasObj: RefObject<HTMLCanvasElement>
+
+  constructor (props: ImageOnCanvasProps) {
+    super(props)
+    this.canvasObj = React.createRef()
+  }
+  componentDidMount () {
+    this.draw()
+  }
+  draw () {
+    const imageW = this.props.imageObj.width
+    const imageH = this.props.imageObj.height
+    const [canvasW, canvasH] = this.props.canvasSize
+    const border = this.props.border
+    this.canvasObj.current!.width = canvasW
+    this.canvasObj.current!.height = canvasH
+    const ctx = this.canvasObj.current!.getContext('2d')
+    ctx?.drawImage(this.props.imageObj, 0, 0, canvasW, canvasH)
+    const [sx, sy, sWidth, sHeight] = getImageValidRegion(ctx!.getImageData(0, 0, canvasW, canvasH))
+    ctx?.clearRect(0, 0, canvasW, canvasH)
+    let canvasRegion: [number, number, number, number]
+    if (sWidth > sHeight) {
+      canvasRegion = [
+        border, 
+        (canvasH - (canvasW - 2 * border) / sWidth * sHeight) / 2,
+        canvasW - 2 * border,
+        (canvasW - 2 * border) / sWidth * sHeight
+      ]
+    } else {
+      canvasRegion = [
+        (canvasW - (canvasH - 2 * border) / sHeight * sWidth) / 2,
+        border, 
+        (canvasH - 2 * border) / sHeight * sWidth,
+        canvasH - 2 * border
+      ]
+    }
+    ctx!.drawImage(
+      this.props.imageObj,
+      sx / canvasW * imageW,
+      sy / canvasH * imageH,
+      sWidth / canvasW * imageW,
+      sHeight / canvasH * imageH,
+      ...canvasRegion
+    )
+  }
+  render () {
+    return (
+      <canvas
+        ref={this.canvasObj}
+      >
+      </canvas>
+    )
+  }
+}

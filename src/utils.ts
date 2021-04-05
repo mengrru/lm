@@ -174,3 +174,58 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
         })(configFromForm.category, categoryRawData)
     }
 }
+
+export function getImageValidRegion (imageData: ImageData): [number, number, number, number] {
+    const data = imageData.data
+    const w = imageData.width, h = imageData.height
+    // from 1
+    const getIndex = function (row: number, col: number) {
+        return (row - 1) * w * 4 + (col - 1) * 4
+    }
+    let sx = -1, sy = -1, sWidth = -1, sHeight = -1
+    for (let i = 1; i <= h; i++) {
+        for (let j = 1; j < w; j++) {
+            if (data[getIndex(i, j) + 3] !== 0) {
+                sy = i - 1
+                break
+            }
+        }
+        if (sy !== -1) {
+            break
+        }
+    }
+    for (let i = 1; i <= w; i++) {
+        for (let j = 1; j <= h; j++) {
+            if (data[getIndex(j, i) + 3] !== 0) {
+                sx = i - 1
+                break
+            }
+        }
+        if (sx !== -1) {
+            break
+        }
+    }
+    for (let i = h; i >= 1; i--) {
+        for (let j = 1; j <= w; j++) {
+            if (data[getIndex(i, j) + 3] !== 0) {
+                sHeight = i - sy
+                break
+            }
+        }
+        if (sHeight !== -1) {
+            break
+        }
+    }
+    for (let i = w; i >= 1; i--) {
+        for (let j = 1; j <= h; j++) {
+            if (data[getIndex(j, i) + 3] !== 0) {
+                sWidth = i - sx
+                break
+            }
+        }
+        if (sWidth !== -1) {
+            break
+        }
+    }
+    return [sx, sy, sWidth, sHeight]
+}
