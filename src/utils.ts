@@ -152,11 +152,11 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
             title: configFromForm.info.title
         },
         category: (function (categoryInfoFromForm, categoryRawData){
-            const res: Config['category'] = []
+            const res: Config['category'] = {}
             Object.keys(categoryRawData).forEach((title) => {
                 const raw = categoryRawData[title]
                 const fromForm = categoryInfoFromForm[title]
-                res.push({
+                res[title] = {
                     info: {
                         title: title,
                         icon: raw.info.icon,
@@ -168,7 +168,7 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
                     items: Object.keys(raw.items).map(itemTitle => {
                         return raw.items[itemTitle]
                     })
-                })
+                }
             })
             return res
         })(configFromForm.category, categoryRawData)

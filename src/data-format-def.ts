@@ -51,22 +51,24 @@ export type Config = {
         title: string
     }
     category: {
-        info: {
-            title: string
-            icon: FullPath
-            defaultPic: PathHash
-            allowBlank: boolean
-            hide: boolean
-            index: number
-        }
-        items: {
-            title: string
-            pics: {
-                picId: PathHash
-                defaultPosition:  PicPosition
+        [title: string]: {
+            info: {
+                title: string
+                icon: FullPath
+                defaultPic: PathHash
+                allowBlank: boolean
+                hide: boolean
+                index: number
+            }
+            items: {
+                title: string
+                pics: {
+                    picId: PathHash
+                    defaultPosition:  PicPosition
+                }[]
             }[]
-        }[]
-    }[]
+        }
+    }
 }
 
 /**
@@ -123,12 +125,16 @@ export type CategoryRawData = {
  * user output data
  */
 export type UserOutputData = {
-    sourceId: ArrayIndex
-    itemId: ArrayIndex
-    pics: {
-        picId: PathHash
-        position: PicPosition
-        size: PicSize
-        index: number
-    }[]
-}[]
+    [title: string]: {
+        itemId: ArrayIndex
+        itemTitle: string
+        pics: {
+            picId: PathHash
+            path: PicPath
+            miniPath: PicMiniPath
+            position: PicPosition
+            size: PicSize
+            index: number
+        }[]
+    }
+}
