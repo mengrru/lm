@@ -1,12 +1,12 @@
 import React from 'react';
-import { UserOutputData } from './data-format-def';
+import { Config, Metadata, UserOutputData } from './data-format-def';
 
 type ResultPreviewProps = {
     userData: UserOutputData
 }
 type ResultPreviewState = {
 }
-export class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewState> {
+class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewState> {
     constructor (props: ResultPreviewProps) {
         super(props)
     }
@@ -33,6 +33,24 @@ export class ResultPreview extends React.Component<ResultPreviewProps, ResultPre
             >
                 {preview}
             </div>
+        )
+    }
+}
+
+type MainProps = {
+    config: Config,
+    metadata: Metadata
+}
+type MainState = {
+}
+export default class Main extends React.Component<MainProps, MainState> {
+    constructor (props: MainProps) {
+        super(props)
+    }
+    render () {
+        console.log(this.props.config)
+        return (
+            <div></div>
         )
     }
 }

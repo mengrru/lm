@@ -229,3 +229,22 @@ export function getImageValidRegion (imageData: ImageData): [number, number, num
     }
     return [sx, sy, sWidth, sHeight]
 }
+
+export function loadFile (path: string): Promise<string> {
+    const request = new XMLHttpRequest()
+    request.open('get', path)
+    request.send(null)
+    let i = 0
+    console.log('call loadFile')
+    return new Promise((resolve, reject) => {
+        request.onload = function () {
+            if (request.readyState === 4) {
+                if (request.status === 200) {
+                    resolve(request.responseText)
+                } else {
+                    reject('Load file ' + path + ' failed.')
+                }
+            }
+        }
+    })
+}

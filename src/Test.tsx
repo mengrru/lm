@@ -3,7 +3,7 @@ import './Test.css';
 import { DirUploadInput, ShowLocalImage, SaveTextLink, ImageOnCanvas } from './common'
 import { ConfigFromForm } from './data-format-def';
 import Form from './Form';
-import { genConfig, genHashFromSourceFileList, genMetadata, getImageValidRegion } from './utils'
+import { genConfig, genHashFromSourceFileList, genMetadata } from './utils'
 
 class Test extends React.Component<any, any>{
   constructor (props: any) {
