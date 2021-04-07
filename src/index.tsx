@@ -12,6 +12,7 @@ import Main from './Main';
 // import Main from './Main';
 import Test from './Test';
 import { loadFile } from './utils';
+import Global from './global'
 
 function Index () {
   return (
@@ -36,9 +37,9 @@ function Index () {
   )
 }
 
-// :id change -> render Page -> exec render() function ->
-// get :id val -> render child page -> use id fetch config ->
-// change Page state -> rerender child page
+// :id change -> state.pageId change -> exec render() function ->
+// render child page to 'loading' -> exec componentDidMount -> use id fetch config ->
+// change Page state -> rerender child page to real page or 404
 
 class Page extends React.Component<any, any> {
   constructor (props: any) {
@@ -58,6 +59,10 @@ class Page extends React.Component<any, any> {
     return null
   }
   componentDidMount () {
+    switch (this.state.pageId) {
+      case 'test':
+        return
+    }
     loadFile('/sources/'+ this.state.pageId + '/config.json')
       .then((config) => {
         this.setState({
@@ -90,7 +95,9 @@ class Page extends React.Component<any, any> {
         } else {
           try {
             const config = JSON.parse(this.state.config)
-            const metadata = JSON.parse(this.state.config)
+            const metadata = JSON.parse(this.state.metadata)
+            Global.config = config
+            Global.metadata = metadata
             return (
               <Main
                 config={config}
@@ -108,14 +115,6 @@ class Page extends React.Component<any, any> {
 }
 
 const WithRouterPage = withRouter(Page)
-
-function asyncTest (): Promise<number> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(1)
-    }, 1000)
-  })
-}
 
 ReactDOM.render(
   <React.StrictMode>

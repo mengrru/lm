@@ -137,6 +137,7 @@ export class DirUploadInput extends React.Component<DirUploadInputProps, DirUplo
  * show a image on canvas
  */
 type ImageOnCanvasProps = {
+  // change imageObj to pathArr or def a new component to pack this component
   imageObj: HTMLImageElement,
   canvasSize: [number, number],
   border: number

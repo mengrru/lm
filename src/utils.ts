@@ -93,7 +93,7 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
                 info: {
                     title: categoryTitle,
                     icon: '',
-                    defalutPic: ''
+                    defaultPic: ''
                 },
                 items: {}
             }
@@ -103,7 +103,7 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
             continue
         }
         if (isDefalut(picInfo.filename)) {
-            res[categoryTitle].info.defalutPic = picId
+            res[categoryTitle].info.defaultPic = picId
         }
         const itemTitle = getItemTitle(picInfo.filename)
         if (!res[categoryTitle].items[itemTitle]) {
@@ -160,7 +160,7 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
                     info: {
                         title: title,
                         icon: raw.info.icon,
-                        defaultPic: raw.info.defalutPic,
+                        defaultPic: raw.info.defaultPic,
                         allowBlank: fromForm.allowBlank,
                         hide: fromForm.hide,
                         index: fromForm.index
@@ -234,7 +234,6 @@ export function loadFile (path: string): Promise<string> {
     const request = new XMLHttpRequest()
     request.open('get', path)
     request.send(null)
-    let i = 0
     console.log('call loadFile')
     return new Promise((resolve, reject) => {
         request.onload = function () {
@@ -247,4 +246,22 @@ export function loadFile (path: string): Promise<string> {
             }
         }
     })
+}
+
+export function loadImage (path: string): Promise<HTMLImageElement> {
+    const img = new Image()
+    img.src = path
+    return new Promise((resolve, reject) => {
+        img.onload = (e) => {
+            resolve(img)
+        }
+    })
+}
+
+export function asyncTest (): Promise<string> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve('async test')
+    }, 1000)
+  })
 }

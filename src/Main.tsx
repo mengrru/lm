@@ -1,5 +1,6 @@
 import React from 'react';
-import { Config, Metadata, UserOutputData } from './data-format-def';
+import { Config, Metadata, PathHash, PicsMetadata, UserOutputData } from './data-format-def';
+import Global from './global'
 
 type ResultPreviewProps = {
     userData: UserOutputData
@@ -37,6 +38,88 @@ class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewSta
     }
 }
 
+type ItemsPorps = {
+    selectedItem: string // unique title
+    selectedCategory: string // unique title
+    // handleOutput: (selectedItem)
+}
+type ItemsState = {
+}
+class Items extends React.Component<ItemsPorps, ItemsState> {
+    constructor (props: ItemsPorps) {
+        super(props)
+        this.state = {
+        }
+    }
+    render () {
+        const ROOT = '/sources/' + Global.config!.root
+        const curCateData = Global.config!.category[this.props.selectedCategory]
+        const picsMetadata = Global.metadata!.data
+        const itemsData = curCateData.items
+        const itemsUI = itemsData.map((item) => {
+            const pathArr = item.pics.map(picInfo => ROOT + picsMetadata[picInfo.picId])
+            return (
+                <div>
+                    {/* <Canvas paths={pathArr} /> */}
+                </div>
+            )
+        })
+        return (
+            <div>
+                {itemsUI}
+            </div>
+        )
+    }
+}
+
+type SelectorProps = {
+}
+type SelectorState = {
+    selectedCategory: string
+    userData: UserOutputData
+}
+class Selector extends React.Component<SelectorProps, SelectorState> {
+    constructor (props: SelectorProps) {
+        super(props)
+        this.state = {
+            selectedCategory: Object.keys(Global.config!.category)
+                .find(title => Global.config!.category[title].info.index === 1)!,
+            userData: {} // need init
+        }
+    }
+    render () {
+        const categoryData = Global.config!.category
+        const categoryUI = Object.keys(categoryData)
+            .sort((a, b) => categoryData[a].info.index - categoryData[b].info.index)
+            .map((ctitle) => {
+                const info = categoryData[ctitle].info
+                return (
+                    <div>
+                        {
+                            info.icon &&
+                            <img src={info.icon} alt=""/>
+                        }
+                        <button>{info.title}</button>
+                    </div>
+                )
+            })
+        const selectedCategory = this.state.selectedCategory
+        
+        return (
+            <div>
+                <ResultPreview
+                    userData={this.state.userData}
+                />
+                <div>{categoryUI}</div>
+                <Items
+                    selectedCategory={selectedCategory}
+                    selectedItem={this.state.userData[selectedCategory].itemTitle}
+                />
+            </div>
+        )
+    }
+}
+
 type MainProps = {
     config: Config,
     metadata: Metadata
@@ -47,10 +130,16 @@ export default class Main extends React.Component<MainProps, MainState> {
     constructor (props: MainProps) {
         super(props)
     }
+    componentWillUnmount () {
+        delete Global.config
+        delete Global.metadata
+    }
     render () {
-        console.log(this.props.config)
         return (
-            <div></div>
+            <div>
+                <Selector
+                />
+            </div>
         )
     }
 }

@@ -107,7 +107,7 @@ export type CategoryRawData = {
         info: {
             title: string
             icon: PicPath // from sourceName, but not implement
-            defalutPic: PathHash
+            defaultPic: PathHash
         }
         items: {
             [title: string]: {
