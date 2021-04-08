@@ -1,4 +1,4 @@
-import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath } from './data-format-def'
+import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath, UserOutputData } from './data-format-def'
 import { Md5 } from 'ts-md5/dist/md5'
 
 function hash (s: string): string {
@@ -126,7 +126,7 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
         for (const file of fileArr) {
             // @ts-ignore
             const relaPathArr = file.webkitRelativePath.split('/')
-            if (relaPathArr[1].split('.')[0] == name) {
+            if (relaPathArr[1].split('.')[0] === name) {
                 return relaPathArr.join('/')
             }
         }
@@ -261,4 +261,27 @@ export function asyncTest (): Promise<string> {
       resolve('async test')
     }, 1000)
   })
+}
+
+export async function genOutputImage (userData: UserOutputData): Promise<HTMLCanvasElement> {
+    const images: any[] = Object.keys(userData).map(cTitle => {
+        return {
+            imageObj: null,
+            index: userData[cTitle].pic.index,
+            path: userData[cTitle].pic.path
+        }
+    })
+    for (const item of images) {
+        const imageObj = await loadImage(item.path)
+        item.imageObj = imageObj
+    }
+    const canvas = document.createElement('canvas')
+    canvas.width = images[0].imageObj.width
+    canvas.height = images[0].imageObj.height
+    const ctx = canvas.getContext('2d')
+    images.sort((a, b) => a.index - b.index)
+    for (const item of images) {
+        ctx?.drawImage(item.imageObj, 0, 0)
+    }
+    return canvas
 }

@@ -3,6 +3,7 @@ import { ImageOnCanvas } from './common';
 import { Config, Metadata, PathHash, UserOutputData } from './data-format-def';
 import Global from './global'
 import './Main.css'
+import { genOutputImage } from './utils';
 
 type ResultPreviewProps = {
     userData: UserOutputData
@@ -15,7 +16,6 @@ class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewSta
         super(props)
     }
     render () {
-        const ROOT = '/sources/' + Global.config!.root
         const preview = Object.keys(this.props.userData)
             .map(title => {
                 const itemData = this.props.userData[title]
@@ -28,7 +28,7 @@ class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewSta
                         <img
                             width="100%"
                             height="100%"
-                            src={ROOT + (picInfo.miniPath || picInfo.path)}
+                            src={picInfo.miniPath || picInfo.path}
                             alt={itemData.itemTitle}
                         />
                     </div>
@@ -162,6 +162,7 @@ class Selector extends React.Component<SelectorProps, SelectorState> {
         return res
     }
     genSingleUserData (categoryTitle: string, picId: PathHash): UserOutputData[any] {
+        const ROOT = '/sources/' + Global.config!.root
         const cData = this.categoryData[categoryTitle]
         const m = Global.metadata!.data
         const picInfo = cData.items.find(e => e.pic.picId === picId)
@@ -171,8 +172,8 @@ class Selector extends React.Component<SelectorProps, SelectorState> {
             itemTitle: picInfo!.title,
             pic: {
                     picId: picId,
-                    path: d.path,
-                    miniPath: d.miniPath || d.path,
+                    path: ROOT + d.path,
+                    miniPath: ROOT + (d.miniPath || d.path),
                     position: picInfo!.pic.defaultPosition,
                     size: [100, 100],
                     index: cData.info.index
@@ -195,6 +196,13 @@ class Selector extends React.Component<SelectorProps, SelectorState> {
                 ...this.state.userData,
                 [c]: this.genSingleUserData(c, picId)
             }
+        })
+    }
+    downloadOutputImage () {
+        genOutputImage(this.state.userData).then((canvas) => {
+            canvas.toBlob(function (blob) {
+                saveAs(blob!, 'output.test.png')
+            })
         })
     }
     render () {
@@ -228,6 +236,7 @@ class Selector extends React.Component<SelectorProps, SelectorState> {
                     selectedCategory={selectedCategory}
                     selectedItem={u ? u.itemTitle : ''}
                 />
+                <button onClick={() => this.downloadOutputImage()}>下载</button>
             </div>
         )
     }
@@ -244,8 +253,8 @@ export default class Main extends React.Component<MainProps, MainState> {
         super(props)
     }
     componentWillUnmount () {
-        delete Global.config
-        delete Global.metadata
+        // delete Global.config
+        // delete Global.metadata
     }
     render () {
         return (
