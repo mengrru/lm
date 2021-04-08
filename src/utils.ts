@@ -106,16 +106,13 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
             res[categoryTitle].info.defaultPic = picId
         }
         const itemTitle = getItemTitle(picInfo.filename)
-        if (!res[categoryTitle].items[itemTitle]) {
-            res[categoryTitle].items[itemTitle] = {
-                title: itemTitle,
-                pics: []
+        res[categoryTitle].items[itemTitle] = {
+            title: itemTitle,
+            pic: {
+                picId: picId,
+                defaultPosition: [0, 0]
             }
         }
-        res[categoryTitle].items[itemTitle].pics.push({
-            picId: picId,
-            defaultPosition: [0, 0]
-        })
     }
     return res
 }

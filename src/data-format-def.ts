@@ -51,7 +51,7 @@ export type Config = {
         title: string
     }
     category: {
-        [title: string]: {
+        [categoryTitle: string]: {
             info: {
                 title: string
                 icon: FullPath
@@ -62,10 +62,10 @@ export type Config = {
             }
             items: {
                 title: string
-                pics: {
+                pic: {
                     picId: PathHash
                     defaultPosition:  PicPosition
-                }[]
+                }
             }[]
         }
     }
@@ -91,7 +91,7 @@ export type ConfigFromForm = {
 }
 
 export type CategoryInfoFromForm = {
-    [title: string]: {
+    [categoryTitle: string]: {
         title: string
         allowBlank: boolean
         hide: boolean
@@ -103,19 +103,19 @@ export type CategoryInfoFromForm = {
  * category raw data, generate from pics metadata
  */
 export type CategoryRawData = {
-    [title: string]: {
+    [categoryTitle: string]: {
         info: {
             title: string
             icon: PicPath // from sourceName, but not implement
             defaultPic: PathHash
         }
         items: {
-            [title: string]: {
+            [itemTitle: string]: {
                 title: string
-                pics: {
+                pic: {
                     picId: PathHash
                     defaultPosition: PicPosition
-                }[]
+                }
             }
         }
     }
@@ -125,16 +125,16 @@ export type CategoryRawData = {
  * user output data
  */
 export type UserOutputData = {
-    [title: string]: {
+    [categoryTitle: string]: {
         itemId: ArrayIndex
         itemTitle: string
-        pics: {
+        pic: {
             picId: PathHash
             path: PicPath
             miniPath: PicMiniPath
             position: PicPosition
             size: PicSize
             index: number
-        }[]
+        }
     }
 }

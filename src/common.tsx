@@ -138,7 +138,7 @@ export class DirUploadInput extends React.Component<DirUploadInputProps, DirUplo
  */
 type ImageOnCanvasProps = {
   // change imageObj to pathArr or def a new component to pack this component
-  imageObj: HTMLImageElement,
+  imageObjs: HTMLImageElement[],
   canvasSize: [number, number],
   border: number
 }
@@ -152,17 +152,19 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
     this.canvasObj = React.createRef()
   }
   componentDidMount () {
-    this.draw()
+    this.props.imageObjs.forEach(e => {
+      this.draw(e)
+    })
   }
-  draw () {
-    const imageW = this.props.imageObj.width
-    const imageH = this.props.imageObj.height
+  draw (imageObj: HTMLImageElement) {
+    const imageW = imageObj.width
+    const imageH = imageObj.height
     const [canvasW, canvasH] = this.props.canvasSize
     const border = this.props.border
     this.canvasObj.current!.width = canvasW
     this.canvasObj.current!.height = canvasH
     const ctx = this.canvasObj.current!.getContext('2d')
-    ctx?.drawImage(this.props.imageObj, 0, 0, canvasW, canvasH)
+    ctx?.drawImage(imageObj, 0, 0, canvasW, canvasH)
     const [sx, sy, sWidth, sHeight] = getImageValidRegion(ctx!.getImageData(0, 0, canvasW, canvasH))
     ctx?.clearRect(0, 0, canvasW, canvasH)
     let canvasRegion: [number, number, number, number]
@@ -182,7 +184,7 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
       ]
     }
     ctx!.drawImage(
-      this.props.imageObj,
+      imageObj,
       sx / canvasW * imageW,
       sy / canvasH * imageH,
       sWidth / canvasW * imageW,
@@ -191,6 +193,7 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
     )
   }
   render () {
+    console.log('draw')
     return (
       <canvas
         ref={this.canvasObj}

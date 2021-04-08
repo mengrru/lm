@@ -25,7 +25,7 @@ class Test extends React.Component<any, any>{
         testImageJSX: (
           <div style={{'backgroundColor': '#fff'}}>
             <ImageOnCanvas
-              imageObj={testImage}
+              imageObjs={[testImage]}
               canvasSize={[90, 90]}
               border={5}
             ></ImageOnCanvas>
