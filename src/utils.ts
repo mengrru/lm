@@ -79,8 +79,8 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
     const isIcon = function (filename: string): boolean {
         return /icon\.png/g.test(filename)
     }
-    const isDefalut = function (filename: string): boolean {
-        return /defalut\..*\.png/g.test(filename)
+    const isDefault = function (filename: string): boolean {
+        return /default\..*\.png/g.test(filename)
     }
     const getItemTitle = function (filename: string): string {
         return filename.replace('default.', '').replace('.png', '')
@@ -102,7 +102,7 @@ export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData
             res[categoryTitle].info.icon = picInfo.path
             continue
         }
-        if (isDefalut(picInfo.filename)) {
+        if (isDefault(picInfo.filename)) {
             res[categoryTitle].info.defaultPic = picId
         }
         const itemTitle = getItemTitle(picInfo.filename)
@@ -134,7 +134,7 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
     }
     return {
         // @ts-ignore
-        root: fileArr[0].webkitRelativePath.split('/')[0] + '/',
+        root: '/sources/' + fileArr[0].webkitRelativePath.split('/')[0] + '/',
         info: {
             author: configFromForm.info.author,
             interface: {
@@ -279,6 +279,8 @@ export async function genOutputImage (userData: UserOutputData): Promise<HTMLCan
     canvas.width = images[0].imageObj.width
     canvas.height = images[0].imageObj.height
     const ctx = canvas.getContext('2d')
+    ctx!.fillStyle = '#ffffff'
+    ctx?.fillRect(0, 0, canvas.width, canvas.height)
     images.sort((a, b) => a.index - b.index)
     for (const item of images) {
         ctx?.drawImage(item.imageObj, 0, 0)

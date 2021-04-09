@@ -66,16 +66,20 @@ class Test extends React.Component<any, any>{
     return (
       <div className="App">
         <header className="App-header">
+          <p>
+            FBI WARNING
+          </p>
+          <p>
+            欢迎你来到神秘页面
+          </p>
           {this.state.testImageJSX}
+          <DirUploadInput
+            handleOutput={(fileList) => this.getFileList(fileList)}
+          />
           <Form
             handleOutput={(output) => this.getFormOutput(output)}
             picsMetadata={metadata ? metadata.data : undefined}
           />
-          {/* 图片路径写法 */}
-          <img src="/sources/linmo/墨镜.png" className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
           {testHash}
           <SaveTextLink
             fileContent={metadataJSON}
@@ -91,20 +95,9 @@ class Test extends React.Component<any, any>{
           >
             config.json下载测试
           </SaveTextLink>
-          <DirUploadInput
-            handleOutput={(fileList) => this.getFileList(fileList)}
-          />
           <ShowLocalImage
             imageFile={files ? files[2] : null}
           />
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
         </header>
       </div>
     );

@@ -1,3 +1,48 @@
 .selected-item {
-    border: 1px solid #000;
+    box-shadow: inset 0px 0px 0px 1px #bbb !important;
+}
+.selected-category button {
+    box-shadow: inset 0px 0px 0px 1px #bbb !important;
+}
+.main {
+    width: 100%;
+}
+.container {
+    margin: 0 auto;
+    width: 70%;
+    max-width: 400px;
+    min-width: 330px;
+    padding: 5%;
+}
+.preview {
+    border: 1px solid #eee
+}
+.category {
+    overflow: hidden;
+}
+.category-item {
+    float: left;
+}
+.category-item button {
+    background-color: #fff;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #eee;
+    font-size: 1em;
+    outline: none;
+}
+.items {
+    overflow: auto;
+    margin: 0 auto;
+}
+.item {
+    display: inline-block;
+    box-shadow: inset 0px 0px 0px 1px #eee;
+}
+.download-btn {
+    width: 100%;
+    height: 2em;
+    font-size: 1.5em;
+    background-color: #fff;
+    border: 1px solid #eee;
 }
