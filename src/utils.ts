@@ -246,9 +246,13 @@ export function loadFile (path: string): Promise<string> {
     })
 }
 
-export function loadImage (path: string): Promise<HTMLImageElement> {
+/**
+ * 由于部分图片会先使用 img 标签加载，由于一些（未查证）的机制，浏览器会在后面再次请求该图时服用之前的相应。
+ * 由于在后续的使用中要求图片对象携带跨域属性，所以在此处增加一条随机 query 以强制重新请求，确保此处返回的响应携带跨域属性
+ */
+export function loadImageWithoutCache (path: string): Promise<HTMLImageElement> {
     const img = new Image()
-    img.src = path
+    img.src = path + '?t=' + Math.random()
     img.crossOrigin = ''
     return new Promise((resolve, reject) => {
         img.onload = (e) => {
@@ -285,7 +289,7 @@ export async function genOutputImage (userData: UserOutputData): Promise<HTMLCan
         if (Global.imageCache[item.id]) {
             item.imageObj = Global.imageCache[item.id]
         } else {
-            item.imageObj = await loadImage(item.path)
+            item.imageObj = await loadImageWithoutCache(item.path)
        }
    }
     const canvas = document.createElement('canvas')
@@ -321,7 +325,7 @@ export function getAnPic (picId: string, path: string): HTMLImageElement {
     }
     const imgObj = new Image()
     imgObj.crossOrigin = ''
-    imgObj.src = path
+    imgObj.src = path + '?t=' + Math.random()
     Global.imageCache[picId] = imgObj
     return imgObj
 }
