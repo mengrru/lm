@@ -153,7 +153,11 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
   }
   componentDidMount () {
     this.props.imageObjs.forEach(e => {
-      this.draw(e)
+      try {
+        this.draw(e)
+      } catch (err) {
+        console.log(err.message)
+      }
     })
   }
   draw (imageObj: HTMLImageElement) {
@@ -193,12 +197,53 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
     )
   }
   render () {
-    console.log('draw')
     return (
       <canvas
         ref={this.canvasObj}
       >
       </canvas>
+    )
+  }
+}
+
+type PopupProps = {
+  content: string | null
+}
+type PopupState = {
+}
+export class Popup extends React.Component<PopupProps, PopupState> {
+  constructor (props: PopupProps) {
+    super(props)
+  }
+  onCloseBtnClick () {
+    this.setState({
+      isOpen: false
+    })
+  }
+  componentDidUpdate () {
+  }
+  render () {
+    const css: React.CSSProperties = {
+      position: 'absolute',
+      width: '100%',
+      top: 0,
+      left: 0,
+      zIndex: 200,
+      visibility: this.props.content === null ? 'hidden' : 'visible'
+    }
+    return (
+      <div style={{position: 'relative'}}>
+        <div
+          className="popup"
+          style={css}
+        >
+          {
+            this.props.content
+            ? <img style={{width: '100%'}} src={this.props.content} alt="" />
+            : <div></div>
+          }
+        </div>
+      </div>
     )
   }
 }

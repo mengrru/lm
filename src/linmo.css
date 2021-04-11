@@ -66,3 +66,7 @@
     background-repeat: no-repeat;
     margin-left: 3px;
 }
+.warning {
+    color: #497D3F;
+    font-size: .8em;
+}

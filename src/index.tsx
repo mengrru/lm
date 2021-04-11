@@ -4,7 +4,6 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link,
   withRouter
 } from "react-router-dom"
 import './index.css';
@@ -13,12 +12,12 @@ import Main from './Main';
 import Test from './Test';
 import { loadFile } from './utils';
 import Global from './global'
+import { Root } from './data-format-def';
 
 function Index () {
   return (
     <Router>
       <div>
-
         <Switch>
           <Route path="/:id" children={<WithRouterPage />} />
         </Switch>
@@ -53,21 +52,28 @@ class Page extends React.Component<any, any> {
       case 'test':
         return
     }
-    loadFile('/sources/'+ this.state.pageId + '/config.json')
-      .then((config) => {
-        this.setState({
-          config: config
-        })
-      }).catch((err) => {
-        throw Error(err)
-      })
-    loadFile('/sources/' + this.state.pageId + '/metadata.json')
-      .then((metadata) => {
-        this.setState({
-          metadata: metadata
-        })
-      }).catch((err) => {
-        throw Error(err)
+    loadFile('/sources/' + this.state.pageId + '/root.json')
+      .then((data) => {
+        const rootData: Root = JSON.parse(data)
+        Global.root = rootData.root
+        const root = Global.root
+
+        loadFile(root + 'config.json')
+          .then((config) => {
+            this.setState({
+              config: config
+            })
+          }).catch((err) => {
+            throw Error(err)
+          })
+        loadFile(root + 'metadata.json')
+          .then((metadata) => {
+            this.setState({
+              metadata: metadata
+            })
+          }).catch((err) => {
+            throw Error(err)
+          })
       })
     }
   // think memory
@@ -76,6 +82,7 @@ class Page extends React.Component<any, any> {
     console.log('Page repeat check')
     switch (id) {
       case 'test':
+        document.title = '拉聂耳地区'
         return (
           <Test />
         )
@@ -88,6 +95,7 @@ class Page extends React.Component<any, any> {
             const metadata = JSON.parse(this.state.metadata)
             Global.config = config
             Global.metadata = metadata
+            document.title = config.info.title
             return (
               <Main
                 config={config}

@@ -1,5 +1,6 @@
 import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath, UserOutputData } from './data-format-def'
 import { Md5 } from 'ts-md5/dist/md5'
+import Global from './global'
 
 function hash (s: string): string {
     return Md5.hashStr(s) as string
@@ -248,6 +249,7 @@ export function loadFile (path: string): Promise<string> {
 export function loadImage (path: string): Promise<HTMLImageElement> {
     const img = new Image()
     img.src = path
+    img.crossOrigin = ''
     return new Promise((resolve, reject) => {
         img.onload = (e) => {
             resolve(img)
@@ -268,13 +270,24 @@ export async function genOutputImage (userData: UserOutputData): Promise<HTMLCan
         return {
             imageObj: null,
             index: userData[cTitle].pic.index,
-            path: userData[cTitle].pic.path
+            path: userData[cTitle].pic.path,
+            id: userData[cTitle].pic.picId
         }
     })
+    /*
     for (const item of images) {
         const imageObj = await loadImage(item.path)
         item.imageObj = imageObj
     }
+    */
+   // 暂时认为Global中缓存的预览图是正常尺寸的图
+   for (const item of images) {
+        if (Global.imageCache[item.id]) {
+            item.imageObj = Global.imageCache[item.id]
+        } else {
+            item.imageObj = await loadImage(item.path)
+       }
+   }
     const canvas = document.createElement('canvas')
     canvas.width = images[0].imageObj.width
     canvas.height = images[0].imageObj.height
@@ -283,7 +296,41 @@ export async function genOutputImage (userData: UserOutputData): Promise<HTMLCan
     ctx?.fillRect(0, 0, canvas.width, canvas.height)
     images.sort((a, b) => a.index - b.index)
     for (const item of images) {
-        ctx?.drawImage(item.imageObj, 0, 0)
+        if (item.imageObj) {
+            ctx?.drawImage(item.imageObj, 0, 0)
+        }
     }
     return canvas
+}
+
+export function isInEvilBrowser (): boolean {
+    const ua = navigator.userAgent.toLowerCase()
+    if (
+        /micromessenger/g.test(ua) ||
+        /weibo/g.test(ua) ||
+        /qq/g.test(ua)
+    ) {
+        return true
+    }
+    return false
+}
+
+export function getAnPic (picId: string, path: string): HTMLImageElement {
+    if (Global.imageCache[picId]) {
+        return Global.imageCache[picId]
+    }
+    const imgObj = new Image()
+    imgObj.crossOrigin = ''
+    imgObj.src = path
+    Global.imageCache[picId] = imgObj
+    return imgObj
+}
+
+export function imageObjToBase64 (img: HTMLImageElement): string {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx!.drawImage(img, 0, 0);
+    return canvas.toDataURL('image/jpeg');
 }

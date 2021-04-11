@@ -1,9 +1,9 @@
 import React from 'react';
-import { ImageOnCanvas } from './common';
+import { ImageOnCanvas, Popup } from './common';
 import { Config, PathHash, UserOutputData } from './data-format-def';
 import Global from './global'
 import './Main.css'
-import { genOutputImage } from './utils';
+import { genOutputImage, getAnPic, isInEvilBrowser } from './utils';
 
 type ResultPreviewProps = {
     userData: UserOutputData
@@ -32,7 +32,7 @@ class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewSta
                         <img
                             width="100%"
                             height="100%"
-                            src={picInfo.miniPath || picInfo.path}
+                            src={(picInfo.miniPath || picInfo.path)}
                             alt={itemData.itemTitle}
                         />
                     </div>
@@ -52,6 +52,7 @@ class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewSta
 type ItemProps = {
     path: string
     size: number
+    picId: string
 }
 type ItemState = {
     canvas: JSX.Element
@@ -60,24 +61,28 @@ class Item extends React.Component<ItemProps, ItemState> {
     imageObj: HTMLImageElement
     constructor (props: ItemProps) {
         super(props)
-        this.imageObj = new Image()
+        this.imageObj = getAnPic(props.picId, props.path)
         this.state = {
             canvas: (<div></div>)
         }
     }
     componentDidMount () {
-        this.imageObj.src = this.props.path
-        this.imageObj.onload = () => {
-            this.setState({
-                canvas: (
-                    <ImageOnCanvas
-                        imageObjs={[this.imageObj]}
-                        canvasSize={[this.props.size, this.props.size]}
-                        border={5}
-                    />
-                )
-            })
+        if (this.imageObj.complete) {
+            this.updateCanvas()
+        } else {
+            this.imageObj.onload = () => {
+                this.updateCanvas()
+            }
         }
+    }
+    updateCanvas () {
+    this.setState({
+        canvas: <ImageOnCanvas
+                    imageObjs={[this.imageObj]}
+                    canvasSize={[this.props.size, this.props.size]}
+                    border={5}
+                />
+    })
     }
     render () {
         return (
@@ -107,7 +112,7 @@ class Items extends React.Component<ItemsPorps, ItemsState> {
     }
     render () {
         const itemSize = this.props.itemSize
-        const ROOT = Global.config!.root
+        const ROOT = Global.root
         const curCateData = Global.config!.category[this.props.selectedCategory]
         const picsMetadata = Global.metadata!.data
         const itemsData = curCateData.items.slice()
@@ -150,6 +155,7 @@ class Items extends React.Component<ItemsPorps, ItemsState> {
                     <Item
                         size={itemSize}
                         path={path}
+                        picId={item.pic.picId}
                     />
                 </div>
             )
@@ -168,6 +174,7 @@ type SelectorProps = {
 type SelectorState = {
     selectedCategory: string
     userData: UserOutputData
+    outputImage: string | null
 }
 export default class Selector extends React.Component<SelectorProps, SelectorState> {
     categoryData: Config['category']
@@ -176,7 +183,8 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         this.categoryData = Global.config!.category
         this.state = {
             selectedCategory: this.getInitSelectedCategory(),
-            userData: this.genInitUserData()
+            userData: this.genInitUserData(),
+            outputImage: null
         }
         this.getSelectedItem = this.getSelectedItem.bind(this)
     }
@@ -198,7 +206,7 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         return res
     }
     genSingleUserData (categoryTitle: string, picId: PathHash): UserOutputData[any] {
-        const ROOT = Global.config!.root
+        const ROOT = Global.root
         const cData = this.categoryData[categoryTitle]
         const m = Global.metadata!.data
         const picInfo = cData.items.find(e => e.pic.picId === picId)
@@ -244,11 +252,33 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         })
     }
     downloadOutputImage () {
-        genOutputImage(this.state.userData).then((canvas) => {
-            canvas.toBlob(function (blob) {
-                saveAs(blob!, 'output.png')
+        const imagep = genOutputImage(this.state.userData)
+        if (isInEvilBrowser()) {
+            imagep.then((canvas) => {
+                canvas.toBlob((blob) => {
+                    const reader = new FileReader()
+                    reader.readAsDataURL(blob!)
+                    reader.onload = (e) => {
+                        this.setState({
+                            outputImage: e.target?.result as string
+                        })
+                    }
+                })
             })
-        })
+        } else {
+            imagep.then((canvas) => {
+                canvas.toBlob(function (blob) {
+                    saveAs(blob!, 'output.png')
+                })
+            })
+        }
+    }
+    componentDidUpdate (prevProps: SelectorProps, prevState: SelectorState) {
+        if (prevState.outputImage != null) {
+            this.setState({
+                outputImage: null
+            })
+        }
     }
     render () {
         const width = this.props.width
@@ -284,6 +314,10 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         
         return (
             <div>
+                <Popup
+                    content={this.state.outputImage}
+                >
+                </Popup>
                 <ResultPreview
                     width={'100%'}
                     userData={this.state.userData}

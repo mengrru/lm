@@ -1,8 +1,9 @@
-import React, { RefObject } from 'react';
+import React from 'react';
 import { Config, Metadata } from './data-format-def';
 import './Main.css'
 import './linmo.css'
 import Selector from './Selector'
+import { isInEvilBrowser } from './utils';
 
 type MainProps = {
     config: Config,
@@ -28,6 +29,11 @@ export default class Main extends React.Component<MainProps, MainState> {
                         <Selector
                             width={width > 400 ? 400 * 0.94 : (width < 330 ? 330 * 0.94 : width)}
                         />
+                        {
+                            isInEvilBrowser()
+                            ? <p className="warning">温馨提示：你当前在APP内置浏览器中，若想保存图片请点击下载按钮后长按上方预览区保存</p>
+                            : <p className="warning">夜晚工作~夜晚工作~</p>
+                        }
                     </div>
                 </div>
             </div>

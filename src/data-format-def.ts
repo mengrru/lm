@@ -12,6 +12,12 @@ export const CONFIG_FILENAME = 'config.json'
 export const METADATA_FILENAME = 'metadata.json'
 
 /**
+ * root.json
+ */
+export type Root = {
+    root: string
+}
+/**
  * metadata.json
  */
 export type PicMetadata = {
@@ -32,7 +38,7 @@ export type Metadata = {
  * config.json
  */
 export type Config = {
-    root: string
+    root: string //discard
     info: {
         author: {
             name: string
