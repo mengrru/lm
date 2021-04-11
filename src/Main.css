@@ -12,10 +12,18 @@
     width: 70%;
     max-width: 400px;
     min-width: 330px;
-    padding: 5%;
+    padding: 4%;
+}
+.header {
+}
+.body {
+    padding: 3%;
+    padding-top: 10%;
+    box-sizing: border-box;
 }
 .preview {
-    border: 1px solid #eee
+    border: 1px solid #eee;
+    background-color: #fff;
 }
 .category {
     overflow: hidden;
@@ -34,6 +42,7 @@
 .items {
     overflow: auto;
     margin: 0 auto;
+    background-color: #fff;
 }
 .item {
     display: inline-block;
