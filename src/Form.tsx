@@ -1,7 +1,7 @@
 import React from 'react';
 import { CategoryInfoFromForm, CategoryRawData, ConfigFromForm, PicsMetadata } from './data-format-def';
 import './Form.css'
-import { getCategoryRawData } from './utils';
+import { getCategoryRawData } from './data-trans';
 
 type Author = {
     name: string
@@ -81,10 +81,16 @@ class Form extends React.Component<FormProps, FormState> {
                 })
         }
     }
+    onConfirm () {
+        if (!this.props.picsMetadata) {
+            return
+        }
+        this.props.handleOutput(this.getFullData())
+    }
     render () {
         return (
             <form>
-                <h2>作者信息</h2>
+                <h2>填写作者信息（也可以不填）</h2>
                 名字：
                 <input
                     value={this.state.author.name}
@@ -103,20 +109,20 @@ class Form extends React.Component<FormProps, FormState> {
                     type="text"
                     onChange={(e) => this.onInputChange(e, 'website')}
                 /><br/>
-                <h2>页面信息</h2>
-                页脚文字：
-                <input
-                    value={this.state.interface.footerText}
-                    type="text"
-                    onChange={(e) => this.onInputChange(e, 'footerText')}
-                /><br/>
+                <h2>填写页面信息（也可以不填，但最好填）</h2>
                 页面标题：
                 <input
                     value={this.state.title}
                     type="text"
                     onChange={(e) => this.onInputChange(e, 'title')}
                 /><br/>
-                <h2>资源信息</h2>
+                页脚文字：
+                <input
+                    value={this.state.interface.footerText}
+                    type="text"
+                    onChange={(e) => this.onInputChange(e, 'footerText')}
+                /><br/>
+                <h2>填写分类信息</h2>
                 {this.props.picsMetadata &&
                     <PicsCategoryForm
                         handleOutput={this.getCategoryInfo}
@@ -124,9 +130,10 @@ class Form extends React.Component<FormProps, FormState> {
                     />
                 }
                 <input
+                    className="form-button"
                     type="button"
                     value="确定"
-                    onClick={() => this.props.handleOutput(this.getFullData())}
+                    onClick={() => this.onConfirm()}
                 />
             </form>
         )
@@ -149,6 +156,7 @@ class PicsCategoryForm extends React.Component<PicsClassFormProps, PicsClassForm
             categoryRawData: categoryRawData,
             data: this.initFormData(categoryRawData)
         }
+        this.props.handleOutput(this.state.data)
         this.handleChange = this.handleChange.bind(this)
     }
     initFormData (categoryRawData: CategoryRawData) {
@@ -193,45 +201,62 @@ class PicsCategoryForm extends React.Component<PicsClassFormProps, PicsClassForm
             Object.keys(categoryData)
             .map((title, currentIndex) => {
                 return (
-                    <div key={title}>
-                        <span>{categoryData[title].info.title}</span>
-                        允许为空
-                        <input
-                            onChange={(e) => this.handleChange(e.target.value, title, 'allowBlank')}
-                            checked={this.state.data[title].allowBlank}
-                            name={title + '-allowBlank'}
-                            type="checkbox"
-                        />
-                        隐藏
-                        <input
-                            onChange={(e) => this.handleChange(e.target.value, title, 'hide')}
-                            checked={this.state.data[title].hide}
-                            name={title + '-hide'}
-                            type="checkbox"
-                        />
-                        index
-                        <select
-                            onChange={(e) => this.handleChange(e.target.value, title, 'index')}
-                            name={title + '-index'}
-                            value={this.state.data[title].index}
-                        >
-                            {
-                                Array.from(Array(len))
-                                    .map((e, i) =>
-                                        <option
-                                            key={i + 1}
-                                            value={i + 1}
-                                        > {i + 1}
-                                        </option>
-                                    )
-                            }
-                        </select>
-                    </div>
+                    <tr key={title}>
+                        <td>
+                            <span>{categoryData[title].info.title}</span>
+                        </td>
+                        <td>
+                            <input
+                                onChange={(e) => this.handleChange(e.target.value, title, 'allowBlank')}
+                                checked={this.state.data[title].allowBlank}
+                                name={title + '-allowBlank'}
+                                type="checkbox"
+                            />
+                        </td>
+                        <td>
+                            <input
+                                onChange={(e) => this.handleChange(e.target.value, title, 'hide')}
+                                checked={this.state.data[title].hide}
+                                name={title + '-hide'}
+                                type="checkbox"
+                            />
+                        </td>
+                        <td>
+                            <select
+                                onChange={(e) => this.handleChange(e.target.value, title, 'index')}
+                                name={title + '-index'}
+                                value={this.state.data[title].index}
+                            >
+                                {
+                                    Array.from(Array(len))
+                                        .map((e, i) =>
+                                            <option
+                                                key={i + 1}
+                                                value={i + 1}
+                                            > {i + 1}
+                                            </option>
+                                        )
+                                }
+                            </select>
+                        </td>
+                    </tr>
                 )
             })
         return (
-            <div>
-                {categoryForm}
+            <div className="form-category-data">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>类别</td>
+                            <td>允许该类别有空白项</td>
+                            <td>该类别不允许选择</td>
+                            <td>层序（数字大的在上面）</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {categoryForm}
+                    </tbody>
+                </table>
             </div>
         )
     }

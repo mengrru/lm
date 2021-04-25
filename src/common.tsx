@@ -9,7 +9,7 @@ import { getImageValidRegion } from './utils'
 type SaveTextLinkProps = {
   filename: string
   fileContent: string
-  class: string
+  className: string
 }
 type SaveTextLinkState = {
 }
@@ -29,7 +29,7 @@ export class SaveTextLink extends React.Component<SaveTextLinkProps, SaveTextLin
       <a
         href="#"
         onClick={() => this.save()}
-        className={this.props.class}
+        className={this.props.className}
       >
         {this.props.children}
       </a>

@@ -32,7 +32,7 @@ export default class Main extends React.Component<MainProps, MainState> {
                         {
                             isInEvilBrowser()
                             ? <p className="warning">温馨提示：你当前在APP内置浏览器中，若想保存图片请点击下载按钮后长按上方预览区保存</p>
-                            : <p className="warning">夜晚工作~夜晚工作~</p>
+                            : <p className="warning">{this.props.config.info.interface.footerText}</p>
                         }
                     </div>
                 </div>

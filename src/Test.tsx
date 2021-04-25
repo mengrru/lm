@@ -3,11 +3,12 @@ import './Test.css';
 import { DirUploadInput, ShowLocalImage, SaveTextLink, ImageOnCanvas } from './common'
 import { ConfigFromForm } from './data-format-def';
 import Form from './Form';
-import { genConfig, genHashFromSourceFileList, genMetadata } from './utils'
+import { genConfig, genHashFromSourceFileList, genMetadata } from './data-trans'
 
 class Test extends React.Component<any, any>{
   constructor (props: any) {
     super(props)
+    document.title = '拉聂耳地区'
     this.state = {
       testFileList: null,
       formOutput: null,
@@ -84,14 +85,14 @@ class Test extends React.Component<any, any>{
           <SaveTextLink
             fileContent={metadataJSON}
             filename="download_metadata_test.json"
-            class=""
+            className=""
           >
            metadata.json下载测试 
           </SaveTextLink>
           <SaveTextLink
             fileContent={this.genConfig()}
             filename="download_config_test.json"
-            class=""
+            className=""
           >
             config.json下载测试
           </SaveTextLink>

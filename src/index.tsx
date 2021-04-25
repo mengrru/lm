@@ -8,11 +8,12 @@ import {
 } from "react-router-dom"
 import './index.css';
 import Main from './Main';
-// import Main from './Main';
 import Test from './Test';
 import { loadFile } from './utils';
 import Global from './global'
 import { Root } from './data-format-def';
+import Create from './Create'
+import IndexContent from './temp-index'
 
 function Index () {
   return (
@@ -20,6 +21,12 @@ function Index () {
       <div>
         <Switch>
           <Route path="/:id" children={<WithRouterPage />} />
+          <Route path="/">
+          {/*
+            <Create />
+          */}
+            <IndexContent />
+          </Route>
         </Switch>
       </div>
     </Router>
@@ -36,7 +43,7 @@ class Page extends React.Component<any, any> {
     this.state = {
       config: null,
       metadata: null,
-      pageId: ''
+      pageId: null
     }
   }
   static getDerivedStateFromProps(props: any, state: any) {
@@ -49,6 +56,7 @@ class Page extends React.Component<any, any> {
   }
   componentDidMount () {
     switch (this.state.pageId) {
+      case 'create':
       case 'test':
         return
     }
@@ -79,10 +87,14 @@ class Page extends React.Component<any, any> {
   // think memory
   render () {
     const id = this.state.pageId
+    console.log(id, 'id')
     console.log('Page repeat check')
     switch (id) {
+      case 'create':
+        return (
+          <Create />
+        )
       case 'test':
-        document.title = '拉聂耳地区'
         return (
           <Test />
         )
