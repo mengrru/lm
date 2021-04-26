@@ -53,7 +53,10 @@ export default class Auto extends React.Component<AutoProps, AutoState>{
         let sMax = parseInt(Array(sLen).fill('F').join(''), 16)
         const newUserOutputData: UserOutputData = genInitUserData(Global.root!, cInfo, this.props.metadata.data)
         for (let i = 0; i < cLen; i++) {
-            const num = parseInt(md5str.slice(i * sLen, i * sLen + sLen), 16)
+            let num = parseInt(md5str.slice(i * sLen, i * sLen + sLen), 16)
+            if (num === sMax) {
+                num--
+            }
             const cTitle = cTitles[i]
             const items = cInfo[cTitle].items.slice().sort((a, b) => a.title < b.title ? 1 : -1)
             const iLen = items.length
