@@ -69,7 +69,7 @@ class Page extends React.Component<any, any> {
         Global.root = rootData.root
         const root = Global.root
 
-        loadFile(root + 'config.json')
+        loadFile(root + 'config.json?q=' + Math.random())
           .then((config) => {
             this.setState({
               config: config
@@ -77,7 +77,7 @@ class Page extends React.Component<any, any> {
           }).catch((err) => {
             throw Error(err)
           })
-        loadFile(root + 'metadata.json')
+        loadFile(root + 'metadata.json?q=' + Math.random())
           .then((metadata) => {
             this.setState({
               metadata: metadata

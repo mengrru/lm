@@ -32,9 +32,6 @@ export default class Auto extends React.Component<AutoProps, AutoState>{
     componentDidMount () {
         this.refreshImage()
     }
-    componentDidUpdate () {
-
-    }
     onInputChange (v: string) {
         this.setState({
             userInput: v
@@ -75,14 +72,8 @@ export default class Auto extends React.Component<AutoProps, AutoState>{
         })
         const imagep = genOutputImage(this.state.userOutputData)
         imagep.then((canvas) => {
-            canvas.toBlob((blob) => {
-                const reader = new FileReader()
-                reader.readAsDataURL(blob!)
-                reader.onload = (e) => {
-                    this.setState({
-                        outputImageBase64: e.target?.result as string
-                    })
-                }
+            this.setState({
+                outputImageBase64: canvas.toDataURL()
             })
         })
     }
