@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageOnCanvas, Popup } from './common';
 import { Config, PathHash, UserOutputData } from './data-format-def';
+import { genInitUserData, genSingleUserData } from './data-trans';
 import Global from './global'
 import './Main.css'
 import { genOutputImage, getAnPic, isInEvilBrowser } from './utils';
@@ -183,7 +184,7 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         this.categoryData = Global.config!.category
         this.state = {
             selectedCategory: this.getInitSelectedCategory(),
-            userData: this.genInitUserData(),
+            userData: genInitUserData(Global.root!, this.categoryData, Global.metadata!.data),
             outputImage: null
         }
         this.getSelectedItem = this.getSelectedItem.bind(this)
@@ -191,38 +192,6 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
     getInitSelectedCategory (): string{
         return Object.keys(Global.config!.category)
             .find(title => Global.config!.category[title].info.index === 1)!
-    }
-    genInitUserData (): UserOutputData {
-        const res: UserOutputData = {}
-        Object.keys(this.categoryData)
-            .forEach(categoryTitle => {
-                const cData = this.categoryData[categoryTitle]
-                if (!cData.info.defaultPic) {
-                    return
-                }
-                const defaultId = cData.info.defaultPic
-                res[categoryTitle] = this.genSingleUserData(categoryTitle, defaultId)
-            })
-        return res
-    }
-    genSingleUserData (categoryTitle: string, picId: PathHash): UserOutputData[any] {
-        const ROOT = Global.root
-        const cData = this.categoryData[categoryTitle]
-        const m = Global.metadata!.data
-        const picInfo = cData.items.find(e => e.pic.picId === picId)
-        const d = m[picId]
-        return {
-            itemId: cData.items.findIndex(e => e.pic.picId === picId),
-            itemTitle: picInfo!.title,
-            pic: {
-                    picId: picId,
-                    path: ROOT + d.path,
-                    miniPath: ROOT + (d.miniPath || d.path),
-                    position: picInfo!.pic.defaultPosition,
-                    size: [100, 100],
-                    index: cData.info.index
-            }
-        }
     }
     handleCategoryClick (title: string) {
         this.setState({
@@ -247,7 +216,7 @@ export default class Selector extends React.Component<SelectorProps, SelectorSta
         this.setState({
             userData: {
                 ...this.state.userData,
-                [c]: this.genSingleUserData(c, picId)
+                [c]: genSingleUserData(Global.root!, this.categoryData, Global.metadata!.data, c, picId)
             }
         })
     }

@@ -45,9 +45,11 @@ class Create extends React.Component<any, any>{
       metadata = genMetadata(files as FileList)
       metadataJSON = JSON.stringify(metadata)
     }
+    console.log(files)
     return (
       <div className="App">
             <header className="app-header">
+                <h2>!醒目! 请使用电脑进行操作</h2>
                 <h2>首先</h2>
                 <p>所有的素材必须是正方形且大小一致，格式为png</p>
                 <h2>然后</h2>
@@ -99,8 +101,8 @@ class Create extends React.Component<any, any>{
                 <h2>上面三个文件下载后</h2>
                 <p>进入刚才创建的 example 文件夹，将这三个文件放到文件夹中</p>
                 <p>这样你的资源包就完成啦！撒花✨</p>
-                <h2>接下来进入最后一步</h2>
-                <p>上传你的资源包到可以被访问到的地方，有两种选择：（非常复杂）</p>
+                <h2>接下来进入最后一步（非常复杂）</h2>
+                <p>上传你的资源包到可以被访问到的地方，有两种选择：</p>
                 <p>1. 通过提pr的方式上传到<a href="https://github.com/mengrru/lm-instance">此仓库</a>的 main 分支的 sources 目录下</p>
                 <p>2. 自行购买静态存储服务（如阿里云OSS）上传，并将 root.json 中的 root 字段改为你的资源所在的绝对地址，然后通过提pr的方式上传 root.json 到<a href="https://github.com/mengrru/lm-instance">此仓库</a>的 main 分支的 sources 目录下</p>
                 <p>上述教程我暂时懒得写了，如果想上传可以直接发邮件到 mengrru@outlook.com 让我帮你上传白嫖我的OSS</p>

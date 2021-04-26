@@ -14,12 +14,14 @@ import Global from './global'
 import { Root } from './data-format-def';
 import Create from './Create'
 import IndexContent from './temp-index'
+import Auto from './Auto'
 
 function Index () {
   return (
     <Router>
       <div>
         <Switch>
+          <Route path="/:id/:auto" children={<WithRouterPage />} />
           <Route path="/:id" children={<WithRouterPage />} />
           <Route path="/">
           {/*
@@ -49,7 +51,8 @@ class Page extends React.Component<any, any> {
   static getDerivedStateFromProps(props: any, state: any) {
     if (props.match.params.id !== state.pageId) {
       return {
-        pageId: props.match.params.id
+        pageId: props.match.params.id,
+        isAuto: props.match.params.auto === 'auto'
       }
     }
     return null
@@ -87,8 +90,7 @@ class Page extends React.Component<any, any> {
   // think memory
   render () {
     const id = this.state.pageId
-    console.log(id, 'id')
-    console.log('Page repeat check')
+    const isAuto = this.state.isAuto
     switch (id) {
       case 'create':
         return (
@@ -108,12 +110,22 @@ class Page extends React.Component<any, any> {
             Global.config = config
             Global.metadata = metadata
             document.title = config.info.title
-            return (
-              <Main
-                config={config}
-                metadata={metadata}
-              />
-            )
+            if (isAuto) {
+              return (
+                <Auto
+                  config={config}
+                  metadata={metadata}
+                  rootName={id}
+                />
+              )
+            } else {
+              return (
+                <Main
+                  config={config}
+                  metadata={metadata}
+                />
+              )
+            }
           } catch {
             return (
               <div>{'出错啦QAQ'}</div>

@@ -1,4 +1,4 @@
-import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath } from './data-format-def'
+import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath, UserOutputData } from './data-format-def'
 import { Md5 } from 'ts-md5/dist/md5'
 
 function hash (s: string): string {
@@ -179,3 +179,41 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
         })(configFromForm.category, categoryRawData)
     }
 }
+
+export function genInitUserData (root: string, categoryConfig: Config['category'], picsMetadata: Metadata['data']): UserOutputData {
+    const res: UserOutputData = {}
+    Object.keys(categoryConfig)
+        .forEach(categoryTitle => {
+            const cData = categoryConfig[categoryTitle]
+            if (!cData.info.defaultPic) {
+                return
+            }
+            const defaultId = cData.info.defaultPic
+            res[categoryTitle] = genSingleUserData(root, categoryConfig, picsMetadata, categoryTitle, defaultId)
+        })
+    return res
+}
+export function genSingleUserData (
+    root: string,
+    categoryConfig: Config['category'],
+    picsMetadata: Metadata['data'],
+    categoryTitle: string,
+    picId: PathHash): UserOutputData[any] {
+        const ROOT = root // Global.root
+        const cData = categoryConfig[categoryTitle]
+        const m = picsMetadata // Global.metadata!.data
+        const picInfo = cData.items.find(e => e.pic.picId === picId)
+        const d = m[picId]
+        return {
+            itemId: cData.items.findIndex(e => e.pic.picId === picId),
+            itemTitle: picInfo!.title,
+            pic: {
+                    picId: picId,
+                    path: ROOT + d.path,
+                    miniPath: ROOT + (d.miniPath || d.path),
+                    position: picInfo!.pic.defaultPosition,
+                    size: [100, 100],
+                    index: cData.info.index
+            }
+        }
+    }

@@ -154,12 +154,12 @@ class PicsCategoryForm extends React.Component<PicsClassFormProps, PicsClassForm
         const categoryRawData = getCategoryRawData(this.props.picsMetadata)
         this.state = {
             categoryRawData: categoryRawData,
-            data: this.initFormData(categoryRawData)
+            data: PicsCategoryForm.initFormData(categoryRawData)
         }
         this.props.handleOutput(this.state.data)
         this.handleChange = this.handleChange.bind(this)
     }
-    initFormData (categoryRawData: CategoryRawData) {
+    static initFormData (categoryRawData: CategoryRawData) {
         const res: CategoryInfoFromForm = {}
         let i = 1
         for (const title in categoryRawData) {
@@ -171,6 +171,16 @@ class PicsCategoryForm extends React.Component<PicsClassFormProps, PicsClassForm
             }
         }
         return res
+    }
+    componentDidUpdate (oldProps: PicsClassFormProps) {
+        if (this.props.picsMetadata === oldProps.picsMetadata) {
+            return
+        }
+        const categoryRawData = getCategoryRawData(this.props.picsMetadata)
+        this.setState({
+            categoryRawData: categoryRawData,
+            data: PicsCategoryForm.initFormData(categoryRawData)
+        })
     }
     handleChange (r: string, title: string, property: string) {
         const copy: CategoryInfoFromForm = {}
