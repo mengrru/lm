@@ -38,7 +38,7 @@ npm run build
 
 在资源包根目录中添加与资源包同名的 css 文件。
 
-比如：对于名为 `example` 的资源包，只需要在其根目录下的 `example.css` 中编写样式，便会自动应用。此例子可以在 `public/example` 中进行查看。
+比如：对于名为 `example` 的资源包，只需要在其根目录下的 `example.css` 中编写样式，便会自动应用。此示例可以在 `public/sources/example` 中进行查看。
 
 ### 修改资源包
 
