@@ -21,9 +21,9 @@ export default function IndexContent () {
   }
   return (
     <div style={divCSS}>
-      <a style={btnCSS} href="/linmo">林墨换装游戏</a>
+      <a style={btnCSS} href="/linmo">林墨捏脸游戏</a>
       <a style={btnCSS} href="/linmo/auto">用你的id生成一个林墨</a>
-      <a style={btnCSS} href="/create">我也要创建一个换装游戏（测试）</a>
+      <a style={btnCSS} href="/create">我也要创建一个捏脸游戏（测试）</a>
     </div>
   )
 }

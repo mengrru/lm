@@ -9,7 +9,7 @@ import {
 import './index.css';
 import Main from './Main';
 import Test from './Test';
-import { loadFile } from './utils';
+import { loadCSS, loadFile } from './utils';
 import Global from './global'
 import { Root } from './data-format-def';
 import Create from './Create'
@@ -45,7 +45,8 @@ class Page extends React.Component<any, any> {
     this.state = {
       config: null,
       metadata: null,
-      pageId: null
+      pageId: null,
+      customedCSS: null
     }
   }
   static getDerivedStateFromProps(props: any, state: any) {
@@ -68,6 +69,10 @@ class Page extends React.Component<any, any> {
         const rootData: Root = JSON.parse(data)
         Global.root = rootData.root
         const root = Global.root
+
+        try {
+          loadCSS(root + this.state.pageId + '.css')
+        } catch (_) { }
 
         loadFile(root + 'config.json?q=' + Math.random())
           .then((config) => {

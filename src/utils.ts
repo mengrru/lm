@@ -166,3 +166,13 @@ export function imageObjToBase64 (img: HTMLImageElement): string {
     ctx!.drawImage(img, 0, 0);
     return canvas.toDataURL('image/jpeg');
 }
+
+export function loadCSS (url: string): HTMLLinkElement {
+    const head = document.getElementsByTagName('head')[0]
+    const link = document.createElement('link')
+    link.type = 'text/css'
+    link.rel = 'stylesheet'
+    link.href = url
+    head.appendChild(link)
+    return link
+}

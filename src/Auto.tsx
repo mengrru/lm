@@ -1,6 +1,6 @@
 import React from 'react';
 import { Config, Metadata, UserOutputData } from './data-format-def';
-import { genInitUserData, genSingleUserData, getRootName } from './data-trans';
+import { genInitUserData, genSingleUserData } from './data-trans';
 import Global from './global';
 import { genOutputImage } from './utils';
 import './Auto.css'

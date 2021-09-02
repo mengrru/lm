@@ -1,7 +1,6 @@
 import React from 'react';
 import { Config, Metadata } from './data-format-def';
 import './Main.css'
-import './linmo.css'
 import Selector from './Selector'
 import { isInEvilBrowser } from './utils';
 

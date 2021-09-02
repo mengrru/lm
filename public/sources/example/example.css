@@ -2,11 +2,10 @@
     max-width: 1024px;
     margin: 0 auto;
     background-repeat: repeat;
-    background-image: url(./linmo-img/bg-green.jpg);
     background-position-x: -5%;
 }
 .header {
-    background-image: url(./linmo-img/header.png);
+    background-image: url(./img/header.png);
     background-size: 100% auto;
     background-repeat: no-repeat;
     background-position-y: 80%;
@@ -14,35 +13,25 @@
     position: relative;
     right: 2.5%;
     z-index: 2;
-    height: 140px;
+    height: 80px;
     width: 105%;
-}
-.header::before {
-    content: "";
-    display: block;
-    background-image: url(./linmo-img/linmo-green.png);
-    background-repeat: no-repeat;
-    background-size: auto 100px;
-    background-position-x: 95%;
-    width: 100%;
-    height: 100px;
 }
 .body {
     background-color: rgba(255, 255, 255, .8);
 }
 .category-item button {
     float: left;
-    color: #333;
+    color: #FDC200;
 }
 .selected-item {
-    box-shadow: inset 0px 0px 0px 5px #7CB072 !important;
+    box-shadow: inset 0px 0px 0px 5px #FFF18C !important;
 }
 .selected-category button {
-    background-color: #7CB072;
-    color: #fff;
+    background-color: #FFF18C;
+    color: #FDC200;
 }
 .download-btn {
-    background-color: #7CB072;
+    background-color: #FFF18C;
     border: 1px solid #eee;
     color: #fff;
 }
@@ -51,7 +40,7 @@
     display: inline-block;
     width: 20px;;
     height: 22px;;
-    background-image: url(./linmo-img/flower.png);
+    background-image: url(./img/flower.png);
     background-size: cover;
     background-repeat: no-repeat;
     margin-right: 3px;
@@ -61,12 +50,12 @@
     display: inline-block;
     width: 20px;;
     height: 22px;;
-    background-image: url(./linmo-img/flower.png);
+    background-image: url(./img/flower.png);
     background-size: cover;
     background-repeat: no-repeat;
     margin-left: 3px;
 }
 .warning {
-    color: #497D3F;
+    color: #FDC200;
     font-size: .8em;
 }

@@ -58,6 +58,7 @@ class Create extends React.Component<any, any>{
                 <p>进入 pics 文件夹，按照你的想法新建若干个文件夹，每个文件夹代表你的素材的分类</p>
                 <p>比如 表情 衣服 背景 等等</p>
                 <p>在相应的文件夹中放入相应的素材</p>
+                <p>对于默认选中的素材，文件名以 default. 开头，比如： default.笑脸.png </p>
                 <h2>在这里传入刚才第一次建好的文件夹（比如 example）</h2>
                 <DirUploadInput
                     handleOutput={(fileList) => this.getFileList(fileList)}
