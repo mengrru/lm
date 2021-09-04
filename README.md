@@ -4,9 +4,15 @@
 
 确保已经安装 `node.js` 和 `npm`。
 
+进入项目根目录执行：
+
+```
+npm install
+```
+
 ### 临时部署
 
-进入项目根目录执行：
+执行：
 
 ```
 npm run start
@@ -16,7 +22,7 @@ npm run start
 
 ### 静态部署
 
-进入项目根目录执行：
+执行：
 
 ```
 npm run build
@@ -46,7 +52,7 @@ npm run build
 
 ## 开发
 
-进入项目根目录执行：
+在项目根目录执行：
 
 ```
 npm run start
