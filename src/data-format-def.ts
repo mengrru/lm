@@ -26,12 +26,12 @@ export type PicMetadata = {
     miniPath?: PicMiniPath
     filename: string
 }
-export type PicsMetadata = {
+export type PicMetadataSet = {
     [id: string]: PicMetadata
 }
 export type Metadata = {
     hash: string,
-    data: PicsMetadata
+    data: PicMetadataSet
 }
 
 /**
@@ -70,7 +70,7 @@ export type Config = {
                 title: string
                 pic: {
                     picId: PathHash
-                    defaultPosition:  PicPosition
+                    defaultPosition: PicPosition
                 }
             }[]
         }
@@ -92,18 +92,17 @@ export type ConfigFromForm = {
         }
         title: string
     }
-    category: CategoryInfoFromForm
-    
-}
-
-export type CategoryInfoFromForm = {
-    [categoryTitle: string]: {
-        title: string
-        allowBlank: boolean
-        hide: boolean
-        index: number
+    category: {
+        [categoryTitle: string]: {
+            title: string
+            allowBlank: boolean
+            hide: boolean
+            index: number
+        }
     }
 }
+
+export type CategoryInfoFromForm = ConfigFromForm['category']
 
 /**
  * category raw data, generate from pics metadata
@@ -116,14 +115,7 @@ export type CategoryRawData = {
             defaultPic: PathHash
         }
         items: {
-            [itemTitle: string]: {
-                title: string
-                pic: {
-                    picId: PathHash
-                    defaultPosition: PicPosition
-                }
-            }
-        }
+            [itemTitle: string]: Config['category']['']['items'][0]          }
     }
 }
 

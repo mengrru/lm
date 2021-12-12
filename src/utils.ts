@@ -1,5 +1,5 @@
 import { UserOutputData } from './data-format-def'
-import Global from './global'
+import { ImageCache } from './global'
 
 export function getImageValidRegion (imageData: ImageData): [number, number, number, number] {
     const data = imageData.data
@@ -114,8 +114,8 @@ export async function genOutputImage (userData: UserOutputData): Promise<HTMLCan
     */
    // 暂时认为Global中缓存的预览图是正常尺寸的图
    for (const item of images) {
-        if (Global.imageCache[item.id]) {
-            item.imageObj = Global.imageCache[item.id]
+        if (ImageCache[item.id]) {
+            item.imageObj = ImageCache[item.id]
         } else {
             item.imageObj = await loadImageWithoutCache(item.path)
        }
@@ -148,13 +148,13 @@ export function isInEvilBrowser (): boolean {
 }
 
 export function getAnPic (picId: string, path: string): HTMLImageElement {
-    if (Global.imageCache[picId]) {
-        return Global.imageCache[picId]
+    if (ImageCache[picId]) {
+        return ImageCache[picId]
     }
     const imgObj = new Image()
     imgObj.crossOrigin = ''
     imgObj.src = path + '?t=' + Math.random()
-    Global.imageCache[picId] = imgObj
+    ImageCache[picId] = imgObj
     return imgObj
 }
 

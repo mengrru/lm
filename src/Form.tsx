@@ -1,5 +1,5 @@
 import React from 'react';
-import { CategoryInfoFromForm, CategoryRawData, ConfigFromForm, PicsMetadata } from './data-format-def';
+import { CategoryInfoFromForm, CategoryRawData, ConfigFromForm, PicMetadataSet } from './data-format-def';
 import './Form.css'
 import { getCategoryRawData } from './data-trans';
 
@@ -18,7 +18,7 @@ type FormState = {
 }
 type FormProps = {
     handleOutput: (output: ConfigFromForm) => void
-    picsMetadata: PicsMetadata | undefined
+    picsMetadata: PicMetadataSet | undefined
 }
 class Form extends React.Component<FormProps, FormState> {
     categoryData: CategoryInfoFromForm
@@ -145,7 +145,7 @@ type PicsClassFormState = {
     data: CategoryInfoFromForm
 }
 type PicsClassFormProps = {
-    picsMetadata: PicsMetadata
+    picsMetadata: PicMetadataSet
     handleOutput: (categoryInfoFromForm: CategoryInfoFromForm) => void
 }
 class PicsCategoryForm extends React.Component<PicsClassFormProps, PicsClassFormState> {

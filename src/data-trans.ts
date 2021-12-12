@@ -1,4 +1,4 @@
-import { Metadata, MINI_DIR, PicMetadata, PicsMetadata, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath, UserOutputData } from './data-format-def'
+import { Metadata, MINI_DIR, PicMetadata, PicMetadataSet, PICS_DIR, PathHash, CategoryRawData, ConfigFromForm, Config, FullPath, UserOutputData } from './data-format-def'
 import { Md5 } from 'ts-md5/dist/md5'
 
 function hash (s: string): string {
@@ -16,7 +16,7 @@ export function genMetadata (sourceFileList: FileList): Metadata {
      * miniPath: PICS_DIR/className/mini/itemName
      */
     const fileArr = Array.from(sourceFileList)
-    const result: PicsMetadata = {}
+    const result: PicMetadataSet = {}
     const hashArr: PathHash[] = []
     for (const file of fileArr) {
         // @ts-ignore
@@ -71,7 +71,7 @@ function genHashFromPicsHash (picsHash: PathHash[]): string {
     return hash(picsHash.sort((a, b) => a > b ? 1 : -1).join(''))
 }
 
-export function getCategoryRawData (picsMetadata: PicsMetadata): CategoryRawData {
+export function getCategoryRawData (picsMetadata: PicMetadataSet): CategoryRawData {
     const res: CategoryRawData = {}
     const getCategoryTitle = function (path: string): string {
         return path.split('/')[1]
@@ -128,7 +128,7 @@ export function getRootName (sourceFileList: FileList): string {
 export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileList): Config {
     // thought fileList is not empty
     const fileArr = Array.from(sourceFileList)
-    const picsMetadata: PicsMetadata = genMetadata(sourceFileList).data
+    const picsMetadata: PicMetadataSet = genMetadata(sourceFileList).data
     const categoryRawData: CategoryRawData = getCategoryRawData(picsMetadata)
     const getFullPath = function (name: string): FullPath {
         for (const file of fileArr) {
