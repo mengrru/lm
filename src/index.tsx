@@ -6,15 +6,14 @@ import {
   Route,
   withRouter
 } from "react-router-dom"
-import './index.css';
-import Main from './Main';
-import Test from './Test';
 import { loadCSS, loadFile } from './utils';
 import { GlobalContext, useGlobalContext } from './global'
 import { Root } from './data-format-def';
-import Create from './Create'
-import IndexContent from './temp-index'
-import Auto from './Auto'
+import Maker from './pages/Maker';
+import Test from './pages/Test';
+import Create from './pages/Create'
+import IndexContent from './pages/Index'
+import Auto from './pages/Auto'
 
 
 function Index () {
@@ -53,8 +52,6 @@ const Page = (props: any) => {
     if (
       pageId === 'create'
       || pageId === 'test'
-      || loading
-      || Global.root
     ) {
       return
     }
@@ -79,7 +76,7 @@ const Page = (props: any) => {
           console.error(e)
         })
       })
-  })
+  }, [pageId])
   switch (pageId) {
     case 'create':
       return <Create />
@@ -99,7 +96,7 @@ const Page = (props: any) => {
             )
           } else {
             return (
-              <Main
+              <Maker
                 config={Global.config}
                 metadata={Global.metadata}
               />

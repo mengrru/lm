@@ -1,10 +1,11 @@
 import React from 'react';
-import { ImageOnCanvas, Popup } from './common';
-import { Config, PathHash, UserOutputData } from './data-format-def';
-import { genInitUserData, genSingleUserData } from './data-trans';
-import Global from './global'
-import './Main.css'
-import { genOutputImage, getAnPic, isInEvilBrowser } from './utils';
+import { ImageOnCanvas, Popup } from '../../common';
+import { Config, PathHash, UserOutputData } from '../../data-format-def';
+import { genInitUserData, genSingleUserData } from '../../data-trans';
+// import { GlobalContext } from '../../global'
+import Global from '../../global'
+import './index.css'
+import { genOutputImage, getAnPic, isInEvilBrowser } from '../../utils';
 
 type ResultPreviewProps = {
     userData: UserOutputData

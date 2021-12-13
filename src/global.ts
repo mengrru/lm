@@ -2,28 +2,28 @@ import React, {useState} from 'react'
 import { Config, Metadata } from './data-format-def'
 
 const GlobalContext = React.createContext({
-    config: {} as Config,
-    metadata: {} as Metadata,
-    root: '',
+  config: {} as Config,
+  metadata: {} as Metadata,
+  root: '',
 
-    setRoot (data: string) {},
-    setConfig (data: Config) {},
-    setMetadata (data: Metadata) {},
+  setRoot (data: string) {},
+  setConfig (data: Config) {},
+  setMetadata (data: Metadata) {},
 })
 
 const useGlobalContext = () => {
-    const [config, setConfig] = useState({} as Config)
-    const [metadata, setMetadata] = useState({} as Metadata)
-    const [root, setRoot] = useState('')
+  const [config, setConfig] = useState({} as Config)
+  const [metadata, setMetadata] = useState({} as Metadata)
+  const [root, setRoot] = useState('')
 
-    return {
-        config,
-        metadata,
-        root,
-        setRoot,
-        setMetadata,
-        setConfig,
-    }
+  return {
+    config,
+    metadata,
+    root,
+    setRoot,
+    setMetadata,
+    setConfig,
+  }
 }
 
 const ImageCache: { [picId: string]: HTMLImageElement } = {}

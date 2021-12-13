@@ -1,4 +1,4 @@
-import React, { RefObject } from 'react'
+import React, { RefObject, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import { getImageValidRegion } from './utils'
 
@@ -9,76 +9,59 @@ import { getImageValidRegion } from './utils'
 type SaveTextLinkProps = {
   filename: string
   fileContent: string
-  className: string
-}
-type SaveTextLinkState = {
+  className: string,
+  children: React.ReactNode
 }
 
-export class SaveTextLink extends React.Component<SaveTextLinkProps, SaveTextLinkState> {
-  constructor (props: SaveTextLinkProps) {
-    super(props)
+export function SaveTextLink (props: SaveTextLinkProps) {
+  function createBlob (): Blob {
+    return new Blob([props.fileContent], { type: "text/plain;charset=utf-8" })
   }
-  createBlob (): Blob {
-    return new Blob([this.props.fileContent], { type: "text/plain;charset=utf-8" })
+  function save () {
+    saveAs(createBlob(), props.filename)
   }
-  save () {
-    saveAs(this.createBlob(), this.props.filename)
-  }
-  render () {
-    return (
-      <a
-        href="#"
-        onClick={() => this.save()}
-        className={this.props.className}
-      >
-        {this.props.children}
-      </a>
-    )
-  }
+  return (
+    <a
+      href="#"
+      onClick={() => save()}
+      className={props.className}
+    >
+      {props.children}
+    </a>
+  )
 }
 
 /** ShowImage
  * input: image file blob : File
  * show: image
  */
-type ShowLocalImageState = {
-    imageBase64String: string
-}
 type ShowLocalImageProps = {
     imageFile: File | null
 }
-export class ShowLocalImage extends React.Component<ShowLocalImageProps, ShowLocalImageState> {
-  constructor (props: ShowLocalImageProps) {
-    super(props)
-    this.state = {
-        imageBase64String: ''
-    }
-  }
-  transFileToBase64 (imageFile: File | null) {
+export function ShowLocalImage (props: ShowLocalImageProps) {
+  const [imageBase64String, setImageBase64String] = useState('')
+
+  function transFileToBase64 (imageFile: File | null) {
     if (!imageFile) {
         return
     }
     const reads = new FileReader()
     reads.readAsDataURL(imageFile)
     reads.onload = (e) => {
-      if (e.target?.result === this.state.imageBase64String) {
+      if (e.target?.result === imageBase64String) {
         return
       }
-      this.setState({
-        imageBase64String: e.target!.result as string
-      })
+      setImageBase64String(e.target!.result as string)
     }
   }
-  render () {
-    this.transFileToBase64(this.props.imageFile)
-    console.log('showimage repeat exec test')
-    return (
-      <img
-        src={this.state.imageBase64String}
-        alt=""
-      ></img>
-    )
-  }
+  transFileToBase64(props.imageFile)
+  console.log('showimage repeat exec test')
+  return (
+    <img
+      src={imageBase64String}
+      alt=""
+    ></img>
+  )
 }
 
 /** DirUploadInput
@@ -92,44 +75,29 @@ type DirUploadInputProps = {
   handleOutput: (fileList: FileList) => void
 }
 
-export class DirUploadInput extends React.Component<DirUploadInputProps, DirUploadInputState> {
-  selectDirInput: RefObject<HTMLInputElement>
+export function DirUploadInput (props: DirUploadInputProps) {
+  const $input: React.MutableRefObject<HTMLInputElement | null> = useRef(null)
 
-  constructor (props: DirUploadInputProps) {
-    super(props)
-    this.selectDirInput = React.createRef()
-    this.state = {
-      files: null
-    }
-  }
-  componentDidMount () {
-    this.initSelectDirInput(this.selectDirInput.current)
-  }
-  initSelectDirInput (input: HTMLInputElement | null) {
-    if (!input) {
+  useEffect(() => {
+    if (!$input.current) {
       return
     }
-    input.setAttribute('webkitdirectory', '')
-    input.setAttribute('directory', '')
-    input.setAttribute('multiple', '')
+    $input.current.setAttribute('webkitdirectory', '')
+    $input.current.setAttribute('directory', '')
+    $input.current.setAttribute('multiple', '')
+  }, [$input])
+  function onGetFiles (event: React.ChangeEvent<HTMLInputElement>) {
+    props.handleOutput(event.target.files as FileList)
   }
-  onGetFiles (event: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({
-      files: event.target.files
-    })
-    this.props.handleOutput(event.target.files as FileList)
-  }
-  render () {
-    return (
-      <div>
-        <input
-          type="file" name="file"
-          ref={this.selectDirInput}
-          onChange={this.onGetFiles.bind(this)}
-        ></input>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <input
+        type="file" name="file"
+        ref={$input}
+        onChange={onGetFiles}
+      ></input>
+    </div>
+  )
 }
 
 /**

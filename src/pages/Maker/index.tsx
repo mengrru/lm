@@ -1,8 +1,8 @@
 import React from 'react';
-import { Config, Metadata } from './data-format-def';
-import './Main.css'
-import Selector from './Selector'
-import { isInEvilBrowser } from './utils';
+import { Config, Metadata } from '../../data-format-def';
+import './index.css'
+import Selector from './selector'
+import { isInEvilBrowser } from '../../utils';
 
 type MainProps = {
     config: Config,

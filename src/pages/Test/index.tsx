@@ -1,9 +1,9 @@
 import React from 'react';
-import './Test.css';
-import { DirUploadInput, ShowLocalImage, SaveTextLink, ImageOnCanvas } from './common'
-import { ConfigFromForm } from './data-format-def';
-import Form from './Form';
-import { genConfig, genHashFromSourceFileList, genMetadata } from './data-trans'
+import './index.css';
+import { DirUploadInput, ShowLocalImage, SaveTextLink, ImageOnCanvas } from '../../common'
+import { ConfigFromForm } from '../../data-format-def';
+import Form from '../Create/form';
+import { genConfig, genHashFromSourceFileList, genMetadata } from '../../data-trans'
 
 class Test extends React.Component<any, any>{
   constructor (props: any) {
