@@ -1,308 +1,278 @@
-import React from 'react';
+import {useContext, useEffect, useRef, useState} from 'react';
 import { ImageOnCanvas, Popup } from '../../common';
-import { Config, PathHash, UserOutputData } from '../../data-format-def';
+import { PathHash, UserOutputData } from '../../data-format-def';
 import { genInitUserData, genSingleUserData } from '../../data-trans';
-// import { GlobalContext } from '../../global'
-import Global from '../../global'
+import {GlobalContext} from '../../global'
 import './index.css'
-import { genOutputImage, getAnPic, isInEvilBrowser } from '../../utils';
+import { genOutputCanvas, getAnPic, isInEvilBrowser } from '../../utils';
+import {MakerAction, MakerActionContext} from './action';
 
 type ResultPreviewProps = {
-    userData: UserOutputData
-    width: string
+  userData: UserOutputData
+  width: string
 }
-type ResultPreviewState = {
-}
-class ResultPreview extends React.Component<ResultPreviewProps, ResultPreviewState> {
-    constructor (props: ResultPreviewProps) {
-        super(props)
-    }
-    render () {
-        const preview = Object.keys(this.props.userData)
-            .map(title => {
-                const itemData = this.props.userData[title]
-                const picInfo = itemData.pic
-                return (
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            zIndex: itemData.pic.index}}
-                        key={itemData.pic.picId}
-                    >
-                        <img
-                            width="100%"
-                            height="100%"
-                            src={(picInfo.miniPath || picInfo.path)}
-                            alt={itemData.itemTitle}
-                        />
-                    </div>
-                )
-            })
-        return (
-            <div
-                className="preview"
-                style={{position: 'relative',  width: this.props.width, paddingTop: '100%' }}
-            >
-                {preview}
-            </div>
-        )
-    }
+function ResultPreview (props: ResultPreviewProps) {
+  const preview = Object.keys(props.userData)
+    .map(title => {
+      const itemData = props.userData[title]
+      const picInfo = itemData.pic
+      return (
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            zIndex: itemData.pic.index}}
+          key={itemData.pic.picId}
+        >
+          <img
+            width="100%"
+            height="100%"
+            src={(picInfo.miniPath || picInfo.path)}
+            alt={itemData.itemTitle}
+          />
+        </div>
+      )
+    })
+  return (
+    <div
+      className="preview"
+      style={{position: 'relative',  width: props.width, paddingTop: '100%' }}
+    >
+      {preview}
+    </div>
+  )
 }
 
 type ItemProps = {
-    path: string
-    size: number
-    picId: string
+  path: string
+  size: number
+  picId: string
 }
-type ItemState = {
-    canvas: JSX.Element
-}
-class Item extends React.Component<ItemProps, ItemState> {
-    imageObj: HTMLImageElement
-    constructor (props: ItemProps) {
-        super(props)
-        this.imageObj = getAnPic(props.picId, props.path)
-        this.state = {
-            canvas: (<div></div>)
-        }
+function Item (props: ItemProps) {
+  const [canvas, setCanvas] = useState(<div></div>)
+  const $image = useRef(getAnPic(props.picId, props.path))
+
+  useEffect(() => {
+    if ($image.current.complete) {
+      updateCanvas()
+    } else {
+      $image.current.onload = () => {
+        updateCanvas()
+      }
     }
-    componentDidMount () {
-        if (this.imageObj.complete) {
-            this.updateCanvas()
-        } else {
-            this.imageObj.onload = () => {
-                this.updateCanvas()
-            }
-        }
-    }
-    updateCanvas () {
-    this.setState({
-        canvas: <ImageOnCanvas
-                    imageObjs={[this.imageObj]}
-                    canvasSize={[this.props.size, this.props.size]}
-                    border={5}
-                />
-    })
-    }
-    render () {
-        return (
-            <div style={{width: this.props.size + 'px', height: this.props.size + 'px'}}>
-                {this.state.canvas}
-            </div>
-        )
-    }
+  }, [$image])
+
+  function updateCanvas () {
+    setCanvas(
+      <ImageOnCanvas
+        imageObjs={[$image.current]}
+        canvasSize={[props.size, props.size]}
+        border={5}
+      />
+    )
+  }
+  return (
+    <div style={{width: props.size + 'px', height: props.size + 'px'}}>
+      {canvas}
+    </div>
+  )
 }
 
 type ItemsPorps = {
-    selectedItem: string // unique title or ''
-    selectedCategory: string // unique title
-    handleOutput: (selectedItemTitle: string, picId: PathHash) => void
-    itemSize: number
+  handleOutput: (selectedItemTitle: string, picId: PathHash) => void
+  selectedItem: string // unique title or ''
+  itemSize: number
 }
-type ItemsState = {
-}
-class Items extends React.Component<ItemsPorps, ItemsState> {
-    constructor (props: ItemsPorps) {
-        super(props)
-        this.state = {
+function Items (props: ItemsPorps) {
+  const Global = useContext(GlobalContext)
+  const MakerAct = useContext(MakerActionContext)
+
+  function onItemClick (itemTitle: string, pidId: PathHash) {
+    MakerAct.setSelectItem()
+    props.handleOutput(itemTitle, pidId)
+  }
+  const itemSize = props.itemSize
+  const ROOT = Global.root
+  const curCateData = Global.config!.category[MakerAct.curCategoryName]
+  const picsMetadata = Global.metadata.data
+  const itemsData = curCateData.items.slice()
+  if (curCateData.info.allowBlank) {
+    itemsData.unshift({
+      title: '',
+      pic: {
+        picId: '',
+        defaultPosition: [0, 0]
+      }
+    })
+  }
+  const itemsUI = itemsData.map((item) => {
+    // /sources/FullPath
+    if (!item.pic.picId) {
+      return (
+        <div
+          onClick={() => onItemClick(item.title, item.pic.picId)}
+          className={
+            (props.selectedItem === item.title ? 'selected-item' : '')
+            + ' item'
+          }
+          key={''}
+          style={{width: itemSize + 'px', height: itemSize + 'px'}}
+        >
+        </div>
+      )
+    }
+    const m = picsMetadata[item.pic.picId]
+    const path = ROOT + (m.miniPath || m.path)
+    return (
+      <div
+        onClick={() => onItemClick(item.title, item.pic.picId)}
+        className={
+          (props.selectedItem === item.title ? 'selected-item' : '')
+          + ' item'
         }
-    }
-    onItemClicked (itemTitle: string, pidId: PathHash) {
-        this.props.handleOutput(itemTitle, pidId)
-    }
-    render () {
-        const itemSize = this.props.itemSize
-        const ROOT = Global.root
-        const curCateData = Global.config!.category[this.props.selectedCategory]
-        const picsMetadata = Global.metadata!.data
-        const itemsData = curCateData.items.slice()
-        if (curCateData.info.allowBlank) {
-            itemsData.unshift({
-                title: '',
-                pic: {
-                    picId: '',
-                    defaultPosition: [0, 0]
-                }
-            })
-        }
-        const itemsUI = itemsData.map((item) => {
-            // /sources/FullPath
-            if (!item.pic.picId) {
-                return (
-                    <div
-                        onClick={() => this.onItemClicked(item.title, item.pic.picId)}
-                        className={
-                            (this.props.selectedItem === item.title ? 'selected-item' : '')
-                            + ' item'
-                        }
-                        key={''}
-                        style={{width: itemSize + 'px', height: itemSize + 'px'}}
-                    >
-                    </div>
-                )
-            }
-            const m = picsMetadata[item.pic.picId]
-            const path = ROOT + (m.miniPath || m.path)
-            return (
-                <div
-                    onClick={() => this.onItemClicked(item.title, item.pic.picId)}
-                    className={
-                        (this.props.selectedItem === item.title ? 'selected-item' : '')
-                        + ' item'
-                    }
-                    key={path}
-                >
-                    <Item
-                        size={itemSize}
-                        path={path}
-                        picId={item.pic.picId}
-                    />
-                </div>
-            )
-        })
-        return (
-            <div className="items">
-                {itemsUI}
-            </div>
-        )
-    }
+        key={path}
+      >
+        <Item
+          size={itemSize}
+          path={path}
+          picId={item.pic.picId}
+        />
+      </div>
+    )
+  })
+  return (
+    <div className="items">
+      {itemsUI}
+    </div>
+  )
 }
 
-type SelectorProps = {
-    width: number
-}
-type SelectorState = {
-    selectedCategory: string
-    userData: UserOutputData
-    outputImage: string | null
-}
-export default class Selector extends React.Component<SelectorProps, SelectorState> {
-    categoryData: Config['category']
-    constructor (props: SelectorProps) {
-        super(props)
-        this.categoryData = Global.config!.category
-        this.state = {
-            selectedCategory: this.getInitSelectedCategory(),
-            userData: genInitUserData(Global.root!, this.categoryData, Global.metadata!.data),
-            outputImage: null
-        }
-        this.getSelectedItem = this.getSelectedItem.bind(this)
-    }
-    getInitSelectedCategory (): string{
-        return Object.keys(Global.config!.category)
-            .find(title => Global.config!.category[title].info.index === 1)!
-    }
-    handleCategoryClick (title: string) {
-        this.setState({
-            selectedCategory: title
-        })
-    }
-    getSelectedItem (itemTitle: string, picId: PathHash) {
-        console.log(itemTitle)
-        const c = this.state.selectedCategory
-        if (itemTitle === '') {
-            delete this.state.userData[c]
-            this.setState({
-                userData: {
-                    ...this.state.userData,
-                }
-            })
-            return
-        }
-        if (this.state.userData[c] && this.state.userData[c].itemTitle === itemTitle) {
-            return
-        }
-        this.setState({
-            userData: {
-                ...this.state.userData,
-                [c]: genSingleUserData(Global.root!, this.categoryData, Global.metadata!.data, c, picId)
-            }
-        })
-    }
-    downloadOutputImage () {
-        const imagep = genOutputImage(this.state.userData)
-        if (isInEvilBrowser()) {
-            imagep.then((canvas) => {
-                canvas.toBlob((blob) => {
-                    const reader = new FileReader()
-                    reader.readAsDataURL(blob!)
-                    reader.onload = (e) => {
-                        this.setState({
-                            outputImage: e.target?.result as string
-                        })
-                    }
-                })
-            })
-        } else {
-            imagep.then((canvas) => {
-                canvas.toBlob(function (blob) {
-                    saveAs(blob!, 'output.png')
-                })
-            })
-        }
-    }
-    componentDidUpdate (prevProps: SelectorProps, prevState: SelectorState) {
-        if (prevState.outputImage != null) {
-            this.setState({
-                outputImage: null
-            })
-        }
-    }
-    render () {
-        const width = this.props.width
-        const categoryData = this.categoryData
-        const categoryUI = Object.keys(categoryData)
-            .sort((a, b) => categoryData[a].info.index - categoryData[b].info.index)
-            .map((ctitle) => {
-                const info = categoryData[ctitle].info
-                if (info.hide) {
-                    return (
-                        <div key={ctitle}></div>
-                    )
-                }
-                return (
-                    <div
-                        key={ctitle}
-                        className={
-                            (this.state.selectedCategory === ctitle ? 'selected-category': '')
-                            + ' category-item'
-                        }
-                        style={{width: width / 4 + 'px', height: width / 4 / 1.8 + 'px'}}
-                    >
-                        {
-                            info.icon &&
-                            <img src={info.icon} alt=""/>
-                        }
-                        <button onClick={() => this.handleCategoryClick(ctitle)}>{ctitle}</button>
-                    </div>
-                )
-            })
-        const selectedCategory = this.state.selectedCategory
-        const u = this.state.userData[selectedCategory]
-        
+function Category () {
+  const Global = useContext(GlobalContext)
+  const MakerAct = useContext(MakerActionContext)
+
+  const width = Global.width
+  const categoryData = Global.config.category
+
+  const UI = Object.keys(categoryData)
+    .sort((a, b) =>
+      categoryData[a].info.index - categoryData[b].info.index)
+    .map((ctitle) => {
+      const info = categoryData[ctitle].info
+      if (info.hide) {
         return (
-            <div>
-                <Popup
-                    content={this.state.outputImage}
-                >
-                </Popup>
-                <ResultPreview
-                    width={'100%'}
-                    userData={this.state.userData}
-                />
-                <div className="category">
-                    {categoryUI}
-                </div>
-                <Items
-                    handleOutput={this.getSelectedItem}
-                    selectedCategory={selectedCategory}
-                    selectedItem={u ? u.itemTitle : ''}
-                    itemSize={width / 3}
-                />
-                <button className="download-btn" onClick={() => this.downloadOutputImage()}>下载</button>
-            </div>
+          <div key={ctitle}></div>
         )
+      }
+      return (
+        <MakerActionContext.Consumer>
+        {
+          value =>
+            <div
+              key={ctitle}
+              className={
+                (value.curCategoryName === ctitle ? 'selected-category': '')
+                + ' category-item'
+              }
+              style={{width: width / 4 + 'px', height: width / 4 / 1.8 + 'px'}}
+            >
+              {
+                info.icon &&
+                <img src={info.icon} alt=""/>
+              }
+              <button onClick={() => MakerAct.setCurCategoryName(ctitle)}>{ctitle}</button>
+            </div>
+        }
+        </MakerActionContext.Consumer>
+      )
+    })
+  return <div className="category">{UI}</div>
+}
+
+export default function Selector () {
+  const Global = useContext(GlobalContext)
+  const MakerAct = useContext(MakerActionContext)
+
+  const [userOutputData, setUserOutputData] = useState(
+    genInitUserData(
+      Global.root,
+      Global.config.category,
+      Global.metadata.data
+    ) as UserOutputData
+  )
+  const [outputImageDataURL, setOutputImageDataURL] = useState('')
+
+  useEffect(() => {
+    if (MakerAct.action === MakerAction.SelectItem) {
+      setOutputImageDataURL('')
     }
+  }, [MakerAct.action])
+
+  function handleInputFromItems (itemTitle: string, picId: PathHash) {
+    if (itemTitle === '') {
+      delete userOutputData[MakerAct.curCategoryName]
+      setUserOutputData({ ...userOutputData })
+      return
+    }
+    if (
+      userOutputData[MakerAct.curCategoryName]
+      && userOutputData[MakerAct.curCategoryName].itemTitle === itemTitle
+    ) {
+      return
+    }
+    setUserOutputData({
+      ...userOutputData,
+      [MakerAct.curCategoryName]: genSingleUserData(
+        Global.root!,
+        Global.config!.category,
+        Global.metadata!.data,
+        MakerAct.curCategoryName,
+        picId
+      )
+    })
+  }
+  function onClickDownload () {
+    MakerAct.setDownload()
+    const imagep = genOutputCanvas(userOutputData)
+    if (isInEvilBrowser()) {
+      imagep.then((canvas) => {
+        setOutputImageDataURL(canvas.toDataURL())
+      })
+    } else {
+      imagep.then((canvas) => {
+        canvas.toBlob(function (blob) {
+          saveAs(blob!, 'output.png')
+        })
+      })
+    }
+  }
+
+  const width = Global.width
+  const u = userOutputData[MakerAct.curCategoryName]
+
+  return (
+    <div>
+      <MakerActionContext.Consumer>
+        {
+          value =>
+            value.action === MakerAction.Download
+            && <Popup content={outputImageDataURL} />
+        }
+      </MakerActionContext.Consumer>
+      <ResultPreview
+        width={'100%'}
+        userData={userOutputData}
+      />
+      <div className="category">
+        <Category />
+      </div>
+      <Items
+        handleOutput={handleInputFromItems}
+        selectedItem={u ? u.itemTitle : ''}
+        itemSize={width / 3}
+      />
+      <button className="download-btn" onClick={() => onClickDownload()}>下载</button>
+    </div>
+  )
 }

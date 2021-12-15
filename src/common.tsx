@@ -68,9 +68,6 @@ export function ShowLocalImage (props: ShowLocalImageProps) {
  * upload a dir, return a FileList
  * output: file list : FileList
  */
-type DirUploadInputState = {
-  files: FileList | null
-}
 type DirUploadInputProps = {
   handleOutput: (fileList: FileList) => void
 }

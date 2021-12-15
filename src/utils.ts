@@ -97,7 +97,7 @@ export function asyncTest (): Promise<string> {
   })
 }
 
-export async function genOutputImage (userData: UserOutputData): Promise<HTMLCanvasElement> {
+export async function genOutputCanvas (userData: UserOutputData): Promise<HTMLCanvasElement> {
     const images: any[] = Object.keys(userData).map(cTitle => {
         return {
             imageObj: null,

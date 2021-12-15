@@ -77,6 +77,7 @@ const Page = (props: any) => {
         })
       })
   }, [pageId])
+
   switch (pageId) {
     case 'create':
       return <Create />
@@ -89,18 +90,9 @@ const Page = (props: any) => {
         try {
           document.title = Global.config ? Global.config.info.title : ''
           if (isAuto) {
-            return (
-              <Auto
-                rootName={pageId}
-              />
-            )
+            return <Auto rootName={pageId} />
           } else {
-            return (
-              <Maker
-                config={Global.config}
-                metadata={Global.metadata}
-              />
-            )
+            return <Maker />
           }
         } catch {
           return <div>{'出错啦QAQ'}</div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef, useContext } from 'react';
 import { Config, Metadata, UserOutputData } from '../../data-format-def';
 import { genInitUserData, genSingleUserData } from '../../data-trans';
 import { GlobalContext } from '../../global'
-import { genOutputImage } from '../../utils';
+import { genOutputCanvas } from '../../utils';
 import './index.css'
 import { Md5 } from 'ts-md5/dist/md5'
 
@@ -32,7 +32,7 @@ export default function Auto (props: AutoProps) {
   const $input: React.MutableRefObject<HTMLInputElement | null> = useRef(null)
 
   useEffect(() => {
-    const imagep = genOutputImage(userOutputData)
+    const imagep = genOutputCanvas(userOutputData)
     imagep.then(canvas => {
       if ($img.current) {
         $img.current.src = canvas.toDataURL()
