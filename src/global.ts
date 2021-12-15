@@ -1,7 +1,5 @@
-import React, {useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import { Config, Metadata } from './data-format-def'
-
-const actualWidth = document.body.clientWidth * 0.7 * 0.94
 
 const GlobalContext = React.createContext({
   config: {} as Config,
@@ -12,20 +10,19 @@ const GlobalContext = React.createContext({
   setRoot (data: string) {},
   setConfig (data: Config) {},
   setMetadata (data: Metadata) {},
-  setWidth (data: number) {}
+  updateClientWidth () {}
 })
 
 const useGlobalContext = () => {
   const [config, setConfig] = useState({} as Config)
   const [metadata, setMetadata] = useState({} as Metadata)
   const [root, setRoot] = useState('')
-  const [width, setWidth] = useState(
-    actualWidth > 400
-      ? 400 * 0.94
-      : (actualWidth < 330 
-          ? 330 * 0.94
-          : actualWidth)
-  )
+  const [clientWidth, setClientWidth] = useState(document.body.clientWidth)
+
+  const width = useMemo(() => {
+    const width = clientWidth * 0.7 * 0.94
+    return width > 400 ? 400 * 0.94 : (width < 330 ? 330 * 0.94 : width)
+  } , [clientWidth])
 
   return {
     config,
@@ -35,7 +32,9 @@ const useGlobalContext = () => {
     setRoot,
     setMetadata,
     setConfig,
-    setWidth
+    updateClientWidth () {
+      setClientWidth(document.body.clientWidth)
+    }
   }
 }
 

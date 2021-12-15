@@ -1,3 +1,6 @@
+body {
+  margin: 0;
+}
 .selected-item {
     box-shadow: inset 0px 0px 0px 1px #bbb !important;
 }
@@ -65,4 +68,11 @@
     font-size: 1.5em;
     background-color: #fff;
     border: 1px solid #eee;
+}
+.link {
+  font-size: .8em;
+  margin: 0 .2em;
+}
+.page-footer {
+  margin-top: 1em;
 }

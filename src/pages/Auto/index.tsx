@@ -61,7 +61,7 @@ export default function Auto (props: AutoProps) {
         <button className="auto-button" onClick={() => onConfirm()}>点击获得图片</button>
       </div>
       <div className="auto-link-container">
-        <a href={'/' + props.rootName}>去玩换装游戏</a>
+        <a href={'/' + props.rootName}>去捏脸</a>
       </div>
     </div>
   )

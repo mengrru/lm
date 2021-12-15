@@ -1,6 +1,7 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import { getImageValidRegion } from './utils'
+import {withRouter} from 'react-router'
 
 /**
  * SaveTextLink
@@ -212,3 +213,15 @@ export class Popup extends React.Component<PopupProps, PopupState> {
     )
   }
 }
+
+function ScrollToTop ({ history }: any) {
+  useEffect(() => {
+    const unlisten = history.listen(() => {
+      window.scrollTo(0, 0)
+    })
+    return () => unlisten()
+  })
+  return (null)
+}
+
+export const ScrollToTopUsedInRouter = withRouter(ScrollToTop)

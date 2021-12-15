@@ -6,38 +6,41 @@ import {
   Route,
   withRouter
 } from "react-router-dom"
-import { loadCSS, loadFile } from './utils';
+import { loadFile } from './utils';
 import { GlobalContext, useGlobalContext } from './global'
 import { Root } from './data-format-def';
 import Maker from './pages/Maker';
 import Test from './pages/Test';
 import Create from './pages/Create'
-import IndexContent from './pages/Index'
+import Index from './pages/Index'
 import Auto from './pages/Auto'
+import {ScrollToTopUsedInRouter} from './common';
 
 
-function Index () {
+function TopRoute () {
   const global = useGlobalContext()
 
   return (
     <GlobalContext.Provider value={global}>
       <Router>
-        <div>
-          <Switch>
-            <Route path="/:id/:auto" children={<WithRouterPage />} />
-            <Route path="/:id" children={<WithRouterPage />} />
-            <Route path="/">
-                <IndexContent />
-            </Route>
-          </Switch>
-        </div>
+        <ScrollToTopUsedInRouter />
+        <Switch>
+          <Route path="/create" children={<Create />} />
+          <Route path="/test" children={<Test />} />
+          <Route path="/:id/:auto" children={<WithRouterUserPage />} />
+          <Route path="/:id" children={<WithRouterUserPage />} />
+          <Route path="/">
+              <Index />
+          </Route>
+        </Switch>
       </Router>
     </GlobalContext.Provider>
   )
 }
 
-const Page = (props: any) => {
+const UserPage = (props: any) => {
   const Global = useContext(GlobalContext)
+
   const pageId = useMemo(
     () => props.match.params.id,
     [props.match]
@@ -47,14 +50,13 @@ const Page = (props: any) => {
     [props.match]
   )
   const [loading, setLoading] = useState(false)
+  const [stylePath, setStylePath] = useState('')
 
   useEffect(() => {
-    if (
-      pageId === 'create'
-      || pageId === 'test'
-    ) {
-      return
-    }
+    Global.updateClientWidth()
+  })
+
+  useEffect(() => {
     setLoading(true)
     loadFile('/sources/' + pageId + '/root.json')
       .then((data) => {
@@ -62,7 +64,7 @@ const Page = (props: any) => {
         Global.setRoot(rootData.root)
         return rootData.root
       }).then(root => {
-        loadCSS(root + pageId + '.css')
+        setStylePath(root + pageId + '.css')
         return root
       }).then(root => {
         Promise.all([
@@ -78,34 +80,28 @@ const Page = (props: any) => {
       })
   }, [pageId])
 
-  switch (pageId) {
-    case 'create':
-      return <Create />
-    case 'test':
-      return <Test />
-    default:
-      if (loading) {
-        return <div>loading</div>
-      } else {
-        try {
-          document.title = Global.config ? Global.config.info.title : ''
-          if (isAuto) {
-            return <Auto rootName={pageId} />
-          } else {
-            return <Maker />
-          }
-        } catch {
-          return <div>{'出错啦QAQ'}</div>
-        }
-      }
+  if (loading) {
+    return <div>loading</div>
+  } else {
+    try {
+      document.title = Global.config ? Global.config.info.title : ''
+      return (
+        <div>
+          <link rel="stylesheet" type="text/css" href={stylePath} />
+          { isAuto ? <Auto rootName={pageId} /> : <Maker rootName={pageId} /> }
+        </div>
+      )
+    } catch {
+      return <div>{'出错啦QAQ'}</div>
+    }
   }
 }
 
-const WithRouterPage = withRouter(Page)
+const WithRouterUserPage = withRouter(UserPage)
 
 ReactDOM.render(
   <React.StrictMode>
-    <Index />
+    <TopRoute />
   </React.StrictMode>,
   document.getElementById('root')
 );

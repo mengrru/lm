@@ -166,11 +166,10 @@ function Category () {
         )
       }
       return (
-        <MakerActionContext.Consumer>
+        <MakerActionContext.Consumer key={ctitle}>
         {
           value =>
             <div
-              key={ctitle}
               className={
                 (value.curCategoryName === ctitle ? 'selected-category': '')
                 + ' category-item'
@@ -264,9 +263,7 @@ export default function Selector () {
         width={'100%'}
         userData={userOutputData}
       />
-      <div className="category">
-        <Category />
-      </div>
+      <Category />
       <Items
         handleOutput={handleInputFromItems}
         selectedItem={u ? u.itemTitle : ''}

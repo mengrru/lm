@@ -1,29 +1,23 @@
+import './index.css'
+import {Link} from "react-router-dom"
+
 export default function IndexContent () {
   document.title = '欢迎光临'
-  const divCSS: React.CSSProperties = {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%'
-  }
-  const btnCSS: React.CSSProperties = {
-    display: 'inline-block',
-    border: '1px solid rgb(73,125,63)',
-    padding: '5px 5px',
-    borderRadius: '7px',
-    margin: '5px',
-    color: 'rgb(73,125,63)',
-    textDecoration: 'none',
-    opacity: '.7',
-    marginTop: '30px'
-  }
+  const alternative = [
+    ['Example', 'example'],
+    ['捏一个林墨', 'linmo']
+  ]
+  const gameLinksUI = alternative.map(
+    e =>
+      <Link key={e[1]} className="index-btn" to={`/${e[1]}`}>{e[0]}</Link>
+  )
   return (
-    <div style={divCSS}>
-      <a style={btnCSS} href="/linmo">林墨捏脸游戏</a>
-      <a style={btnCSS} href="/linmo/auto">用你的id生成一个林墨</a>
-      <a style={btnCSS} href="/create">我也要创建一个捏脸游戏（测试）</a>
+    <div className="index-container">
+      <div>
+        目前本实例可以游玩的捏脸游戏：<br/>
+        {gameLinksUI}
+      </div>
+      <Link className="index-link" to="/create">我也要创建一个捏脸游戏</Link>
     </div>
   )
 }
