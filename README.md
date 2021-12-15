@@ -58,8 +58,8 @@ npm run build
 npm run start
 ```
 
-### 临时主页
+### 主页
 
-临时主页 `src/temp-index.tsx` 。修改它以自定义属于自己的主页。
+主页 `src/pages/Index/index.tsx` 。修改它以自定义属于自己的主页。
 
 Coming soon.
