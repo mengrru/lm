@@ -72,25 +72,22 @@ function Create () {
           { value =>
             value.action === CreateAction.Confirmed
             ? (
-              <div>
+              <div className="download-config-link-container">
                 <SaveTextLink
                   fileContent={metadata ? JSON.stringify(metadata) : '{}'}
                   filename="metadata.json"
-                  className="download-config-link"
                 >
                   下载metadata.json 
                 </SaveTextLink>
                 <SaveTextLink
                   fileContent={config}
                   filename="config.json"
-                  className="download-config-link"
                 >
                   下载config.json
                 </SaveTextLink>
                 <SaveTextLink
                   fileContent={rootJSON}
                   filename="root.json"
-                  className="download-config-link"
                 >
                   下载root.json
                 </SaveTextLink>

@@ -10,7 +10,6 @@ import {withRouter} from 'react-router'
 type SaveTextLinkProps = {
   filename: string
   fileContent: string
-  className: string,
   children: React.ReactNode
 }
 
@@ -25,7 +24,6 @@ export function SaveTextLink (props: SaveTextLinkProps) {
     <a
       href="#"
       onClick={() => save()}
-      className={props.className}
     >
       {props.children}
     </a>
@@ -82,17 +80,15 @@ export function DirUploadInput (props: DirUploadInputProps) {
     }
     $input.current.setAttribute('webkitdirectory', '')
     $input.current.setAttribute('directory', '')
-    $input.current.setAttribute('multiple', '')
   }, [$input])
-  function onGetFiles (event: React.ChangeEvent<HTMLInputElement>) {
-    props.handleOutput(event.target.files as FileList)
-  }
+
   return (
     <div>
       <input
         type="file" name="file"
         ref={$input}
-        onChange={onGetFiles}
+        multiple
+        onChange={e => props.handleOutput(e.target.files as FileList)}
       ></input>
     </div>
   )
@@ -108,32 +104,26 @@ type ImageOnCanvasProps = {
   canvasSize: [number, number],
   border: number
 }
-type ImageOnCanvasState = {
-}
-export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCanvasState> {
-  canvasObj: RefObject<HTMLCanvasElement>
+export function ImageOnCanvas (props: ImageOnCanvasProps) {
+  const $canvas = useRef(document.createElement('canvas'))
 
-  constructor (props: ImageOnCanvasProps) {
-    super(props)
-    this.canvasObj = React.createRef()
-  }
-  componentDidMount () {
-    this.props.imageObjs.forEach(e => {
+  useEffect(() => {
+    props.imageObjs.forEach(e => {
       try {
-        this.draw(e)
+        draw(e)
       } catch (err) {
         console.log(err.message)
       }
     })
-  }
-  draw (imageObj: HTMLImageElement) {
+  })
+  function draw (imageObj: HTMLImageElement) {
     const imageW = imageObj.width
     const imageH = imageObj.height
-    const [canvasW, canvasH] = this.props.canvasSize
-    const border = this.props.border
-    this.canvasObj.current!.width = canvasW
-    this.canvasObj.current!.height = canvasH
-    const ctx = this.canvasObj.current!.getContext('2d')
+    const [canvasW, canvasH] = props.canvasSize
+    const border = props.border
+    $canvas.current!.width = canvasW
+    $canvas.current!.height = canvasH
+    const ctx = $canvas.current!.getContext('2d')
     ctx?.drawImage(imageObj, 0, 0, canvasW, canvasH)
     const [sx, sy, sWidth, sHeight] = getImageValidRegion(ctx!.getImageData(0, 0, canvasW, canvasH))
     ctx?.clearRect(0, 0, canvasW, canvasH)
@@ -162,56 +152,34 @@ export class ImageOnCanvas extends React.Component<ImageOnCanvasProps, ImageOnCa
       ...canvasRegion
     )
   }
-  render () {
-    return (
-      <canvas
-        ref={this.canvasObj}
-      >
-      </canvas>
-    )
-  }
+  return (
+    <canvas ref={$canvas}></canvas>
+  )
 }
 
 type PopupProps = {
   content: string | null
 }
-type PopupState = {
-}
-export class Popup extends React.Component<PopupProps, PopupState> {
-  constructor (props: PopupProps) {
-    super(props)
+export function Popup (props: PopupProps) {
+  const css: React.CSSProperties = {
+    position: 'absolute',
+    width: '100%',
+    top: 0,
+    left: 0,
+    zIndex: 200,
+    visibility: props.content === null ? 'hidden' : 'visible'
   }
-  onCloseBtnClick () {
-    this.setState({
-      isOpen: false
-    })
-  }
-  componentDidUpdate () {
-  }
-  render () {
-    const css: React.CSSProperties = {
-      position: 'absolute',
-      width: '100%',
-      top: 0,
-      left: 0,
-      zIndex: 200,
-      visibility: this.props.content === null ? 'hidden' : 'visible'
-    }
-    return (
-      <div style={{position: 'relative'}}>
-        <div
-          className="popup"
-          style={css}
-        >
-          {
-            this.props.content
-            ? <img style={{width: '100%'}} src={this.props.content} alt="" />
+  return (
+    <div style={{position: 'relative'}}>
+      <div className="popup" style={css} >
+        {
+          props.content
+            ? <img style={{width: '100%'}} src={props.content} alt="" />
             : <div></div>
-          }
-        </div>
+        }
       </div>
-    )
-  }
+    </div>
+  )
 }
 
 function ScrollToTop ({ history }: any) {

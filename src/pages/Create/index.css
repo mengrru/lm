@@ -18,7 +18,7 @@
   font-size: calc(10px + 2vmin);
 }
 
-.download-config-link {
+.download-config-link-container a {
     display: inline-block;
     border: 1px solid #ccc;
     padding: 5px 5px;

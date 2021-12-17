@@ -4,9 +4,13 @@ import { Md5 } from 'ts-md5/dist/md5'
 function hash (s: string): string {
     return Md5.hashStr(s) as string
 }
-function getPathHash (picRealPath: string): PathHash {
+export function getPathHash (picRealPath: string): PathHash {
     // realPath: PICS_DIR/className/itemName
     return hash(picRealPath)
+}
+export function getRealPath (relativePath: string): string {
+  const pathSplit = relativePath.split('/')
+  return pathSplit.slice(1, 3).join('/') + '/' + pathSplit[pathSplit.length - 1]
 }
 export function genMetadata (sourceFileList: FileList): Metadata {
     /**
@@ -27,7 +31,7 @@ export function genMetadata (sourceFileList: FileList): Metadata {
             continue
         }
         // PICS_DIR/className/itemName
-        const realPath = pathSplit.slice(1, 3).join('/') + '/' + pathSplit[pathSplit.length - 1]
+        const realPath = getRealPath(path)
         const id = getPathHash(realPath)
         if (!result[id]) {
             hashArr.push(id)
@@ -67,7 +71,7 @@ export function genHashFromSourceFileList (sourceFileList: FileList): string {
     return genHashFromPicsHash(hashArr)
 }
 
-function genHashFromPicsHash (picsHash: PathHash[]): string {
+export function genHashFromPicsHash (picsHash: PathHash[]): string {
     return hash(picsHash.sort((a, b) => a > b ? 1 : -1).join(''))
 }
 
@@ -125,7 +129,10 @@ export function getRootName (sourceFileList: FileList): string {
     return sourceFileList[0].webkitRelativePath.split('/')[0]
 }
 
-export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileList): Config {
+export function genConfig (
+  configFromForm: ConfigFromForm,
+  sourceFileList: FileList
+): Config {
     // thought fileList is not empty
     const fileArr = Array.from(sourceFileList)
     const picsMetadata: PicMetadataSet = genMetadata(sourceFileList).data
@@ -180,7 +187,11 @@ export function genConfig (configFromForm: ConfigFromForm, sourceFileList: FileL
     }
 }
 
-export function genInitUserData (root: string, categoryConfig: Config['category'], picsMetadata: Metadata['data']): UserOutputData {
+export function genInitUserData (
+  root: string,
+  categoryConfig: Config['category'],
+  picsMetadata: Metadata['data']
+): UserOutputData {
     const res: UserOutputData = {}
     Object.keys(categoryConfig)
         .forEach(categoryTitle => {
@@ -198,7 +209,8 @@ export function genSingleUserData (
     categoryConfig: Config['category'],
     picsMetadata: Metadata['data'],
     categoryTitle: string,
-    picId: PathHash): UserOutputData[any] {
+    picId: PathHash
+): UserOutputData[any] {
         const ROOT = root // Global.root
         const cData = categoryConfig[categoryTitle]
         const m = picsMetadata // Global.metadata!.data

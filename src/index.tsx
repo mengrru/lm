@@ -9,12 +9,12 @@ import {
 import { loadFile } from './utils';
 import { GlobalContext, useGlobalContext } from './global'
 import { Root } from './data-format-def';
+import { ScrollToTopUsedInRouter } from './common';
 import Maker from './pages/Maker';
 import Test from './pages/Test';
 import Create from './pages/Create'
 import Index from './pages/Index'
 import Auto from './pages/Auto'
-import {ScrollToTopUsedInRouter} from './common';
 
 
 function TopRoute () {
@@ -27,8 +27,8 @@ function TopRoute () {
         <Switch>
           <Route path="/create" children={<Create />} />
           <Route path="/test" children={<Test />} />
-          <Route path="/:id/:auto" children={<WithRouterUserPage />} />
-          <Route path="/:id" children={<WithRouterUserPage />} />
+          <Route path="/:id/:auto" children={<UserPage />} />
+          <Route path="/:id" children={<UserPage />} />
           <Route path="/">
               <Index />
           </Route>
@@ -38,7 +38,7 @@ function TopRoute () {
   )
 }
 
-const UserPage = (props: any) => {
+const UserPage = withRouter((props: any) => {
   const Global = useContext(GlobalContext)
 
   const pageId = useMemo(
@@ -95,9 +95,7 @@ const UserPage = (props: any) => {
       return <div>{'出错啦QAQ'}</div>
     }
   }
-}
-
-const WithRouterUserPage = withRouter(UserPage)
+})
 
 ReactDOM.render(
   <React.StrictMode>

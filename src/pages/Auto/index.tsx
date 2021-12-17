@@ -5,6 +5,7 @@ import { GlobalContext } from '../../global'
 import { genOutputCanvas } from '../../utils';
 import './index.css'
 import { Md5 } from 'ts-md5/dist/md5'
+import {Link} from 'react-router-dom';
 
 type AutoProps = {
   rootName: string
@@ -16,7 +17,7 @@ export default function Auto (props: AutoProps) {
   const [loading, setLoading] = useState(true)
   const userOutputData = useMemo(
     () => userInputStr
-      ? genRandomUserOuputData(
+      ? genUserOuputDataFromStr(
         Global.root,
         Global.metadata,
         Global.config.category,
@@ -61,13 +62,13 @@ export default function Auto (props: AutoProps) {
         <button className="auto-button" onClick={() => onConfirm()}>点击获得图片</button>
       </div>
       <div className="auto-link-container">
-        <a href={'/' + props.rootName}>去捏脸</a>
+        <Link to={'/' + props.rootName}>去捏脸</Link>
       </div>
     </div>
   )
 }
 
-function genRandomUserOuputData (
+function genUserOuputDataFromStr (
   root: string,
   metadata: Metadata,
   configCategory: Config['category'],
