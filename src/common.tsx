@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { saveAs } from 'file-saver'
 import { getImageValidRegion } from './utils'
 import {withRouter} from 'react-router'
